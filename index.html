@@ -255,16 +255,26 @@
         
         <!-- TAB: LINKS & CATEGORIES -->
         <div id="tabContentLinks" class="block animate-in">
-          <div class="flex justify-between items-center mb-8">
+          <div class="flex justify-between items-center mb-4">
             <div>
               <h3 class="text-2xl font-bold text-white">Workspaces</h3>
               <p class="text-sm text-slate-400 mt-1">Organize and manage your portal modules.</p>
             </div>
-            <button onclick="showModal('categoryModal')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-full text-sm font-semibold flex items-center gap-2 shadow-lg shadow-indigo-500/20 hover:-translate-y-0.5 transition-all">
+            <button onclick="window.showModal('categoryModal')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-full text-sm font-semibold flex items-center gap-2 shadow-lg shadow-indigo-500/20 hover:-translate-y-0.5 transition-all">
               <i data-lucide="plus" class="w-4 h-4"></i> New Section
             </button>
           </div>
           
+          <!-- Admin Portal Tabs -->
+          <div class="flex gap-2 border-b border-slate-700/50 mb-6 pb-1">
+            <button onclick="window.switchAdminPortalTab('webapp')" id="adminTabAppBtn" class="flex items-center gap-2 px-4 py-2 border-b-2 font-bold text-sm transition-all border-indigo-400 text-indigo-400">
+              <i data-lucide="layout" class="w-4 h-4"></i> Applications
+            </button>
+            <button onclick="window.switchAdminPortalTab('document')" id="adminTabDocBtn" class="flex items-center gap-2 px-4 py-2 border-b-2 border-transparent font-medium text-sm transition-all text-slate-400 hover:text-slate-200 hover:border-slate-500">
+              <i data-lucide="folder-open" class="w-4 h-4"></i> Documents
+            </button>
+          </div>
+
           <div id="adminCategoriesList" class="space-y-6">
             <!-- JS renders categories here -->
           </div>
@@ -377,6 +387,36 @@
       </form>
     </div>
 
+    <!-- Modal: Edit Category -->
+    <div id="editCategoryModal" class="hidden glass-panel rounded-3xl p-8 w-full max-w-md shadow-2xl">
+      <h3 class="text-xl font-bold text-white mb-6">Modify Section</h3>
+      <form onsubmit="handleEditCategory(event)" class="space-y-5">
+        <input type="hidden" id="editCatId">
+        <div>
+          <label class="block text-sm font-semibold text-slate-300 mb-1.5 ml-1">Type</label>
+          <select id="editCatType" class="w-full px-4 py-3 glass-input rounded-xl outline-none [&>option]:bg-slate-800">
+            <option value="webapp">Web Application</option>
+            <option value="document">Document</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-300 mb-1.5 ml-1">Name</label>
+          <input type="text" id="editCatName" required placeholder="E.g., Design Assets" class="w-full px-4 py-3 glass-input rounded-xl outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-300 mb-2 ml-1">Symbol</label>
+          <input type="hidden" id="editCatIconInput" required>
+          <div class="grid grid-cols-6 gap-2 max-h-40 overflow-y-auto p-1 custom-scrollbar" id="editCatIconGrid">
+            <!-- JS renders icons here -->
+          </div>
+        </div>
+        <div class="flex justify-end gap-3 mt-8">
+          <button type="button" onclick="hideModal()" class="px-5 py-2.5 text-slate-300 bg-white/10 hover:bg-white/20 rounded-xl font-semibold transition-all">Cancel</button>
+          <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold shadow-md shadow-indigo-500/20">Update</button>
+        </div>
+      </form>
+    </div>
+
     <!-- Modal: Add Link -->
     <div id="linkModal" class="hidden glass-panel rounded-3xl p-8 w-full max-w-md shadow-2xl">
       <h3 class="text-xl font-bold text-white mb-6">Add Module</h3>
@@ -404,6 +444,38 @@
         <div class="flex justify-end gap-3 mt-8">
           <button type="button" onclick="hideModal()" class="px-5 py-2.5 text-slate-300 bg-white/10 hover:bg-white/20 rounded-xl font-semibold transition-all">Cancel</button>
           <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold shadow-md shadow-indigo-500/20">Deploy</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal: Edit Link -->
+    <div id="editLinkModal" class="hidden glass-panel rounded-3xl p-8 w-full max-w-md shadow-2xl">
+      <h3 class="text-xl font-bold text-white mb-6">Modify Module</h3>
+      <form onsubmit="handleEditLink(event)" class="space-y-5">
+        <input type="hidden" id="editLinkCategoryId">
+        <input type="hidden" id="editLinkId">
+        <div>
+          <label class="block text-sm font-semibold text-slate-300 mb-1.5 ml-1">Title</label>
+          <input type="text" id="editLinkTitle" required class="w-full px-4 py-3 glass-input rounded-xl outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-300 mb-1.5 ml-1">Target URL</label>
+          <input type="text" id="editLinkUrl" required placeholder="https://..." class="w-full px-4 py-3 glass-input rounded-xl outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-300 mb-2 ml-1">Icon</label>
+          <input type="hidden" id="editLinkIconInput" required>
+          <div class="grid grid-cols-6 gap-2 max-h-32 overflow-y-auto p-1 custom-scrollbar" id="editLinkIconGrid">
+            <!-- JS renders icons here -->
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-300 mb-1.5 ml-1">Description</label>
+          <textarea id="editLinkDesc" rows="2" class="w-full px-4 py-3 glass-input rounded-xl outline-none"></textarea>
+        </div>
+        <div class="flex justify-end gap-3 mt-8">
+          <button type="button" onclick="hideModal()" class="px-5 py-2.5 text-slate-300 bg-white/10 hover:bg-white/20 rounded-xl font-semibold transition-all">Cancel</button>
+          <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold shadow-md shadow-indigo-500/20">Update Module</button>
         </div>
       </form>
     </div>
@@ -708,13 +780,15 @@ service cloud.firestore {
         const grid = document.getElementById(gridId);
         if(!grid) return;
         grid.innerHTML = availableIcons.map(icon => `
-          <button type="button" onclick="selectIcon('${inputId}', '${icon}')" id="btn_${inputId}_${icon}" class="flex items-center justify-center p-2.5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all shadow-sm">
+          <button type="button" onclick="window.selectIcon('${inputId}', '${icon}')" id="btn_${inputId}_${icon}" class="flex items-center justify-center p-2.5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all shadow-sm">
             <i data-lucide="${icon}" class="w-5 h-5 text-slate-400"></i>
           </button>
         `).join('');
       };
       renderGrid('catIconGrid', 'catIconInput');
       renderGrid('linkIconGrid', 'linkIconInput');
+      renderGrid('editCatIconGrid', 'editCatIconInput');
+      renderGrid('editLinkIconGrid', 'editLinkIconInput');
     }
 
     window.selectIcon = function(inputId, iconName) {
@@ -969,8 +1043,30 @@ service cloud.firestore {
       }
     };
 
+    let activeAdminPortalTab = 'webapp';
+
+    window.switchAdminPortalTab = function(tabType) {
+      activeAdminPortalTab = tabType;
+      
+      const appBtn = document.getElementById('adminTabAppBtn');
+      const docBtn = document.getElementById('adminTabDocBtn');
+      
+      const activeClass = "flex items-center gap-2 px-4 py-2 border-b-2 font-bold text-sm transition-all border-indigo-400 text-indigo-400";
+      const inactiveClass = "flex items-center gap-2 px-4 py-2 border-b-2 border-transparent font-medium text-sm transition-all text-slate-400 hover:text-slate-200 hover:border-slate-500";
+
+      if (tabType === 'webapp') {
+        appBtn.className = activeClass;
+        docBtn.className = inactiveClass;
+      } else {
+        docBtn.className = activeClass;
+        appBtn.className = inactiveClass;
+      }
+      
+      renderAdminLinks();
+    };
+
     function renderAdminLinks() {
-      const data = globalPortalData;
+      const data = globalPortalData.filter(section => section.type === activeAdminPortalTab);
       const container = document.getElementById('adminCategoriesList');
       
       container.innerHTML = data.map(cat => `
@@ -986,8 +1082,9 @@ service cloud.firestore {
               </div>
             </div>
             <div class="flex gap-2">
-              <button onclick="openLinkModal('${cat.id}')" class="text-sm text-indigo-300 hover:text-white font-bold px-4 py-2 rounded-full bg-white/10 hover:bg-indigo-600 shadow-sm transition-all border border-white/5">+ Add Module</button>
-              <button onclick="deleteCategory('${cat.id}')" class="text-rose-400 hover:text-white p-2 rounded-full bg-white/5 hover:bg-rose-500 shadow-sm transition-all border border-white/5" title="Delete Category"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+              <button onclick="window.openLinkModal('${cat.id}')" class="text-sm text-indigo-300 hover:text-white font-bold px-4 py-2 rounded-full bg-white/10 hover:bg-indigo-600 shadow-sm transition-all border border-white/5">+ Add Module</button>
+              <button onclick="window.editCategory('${cat.id}')" class="text-slate-400 hover:text-indigo-400 p-2 rounded-full bg-white/5 hover:bg-indigo-500/20 shadow-sm transition-all border border-white/5" title="Edit Category"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+              <button onclick="window.deleteCategory('${cat.id}')" class="text-rose-400 hover:text-white p-2 rounded-full bg-white/5 hover:bg-rose-500 shadow-sm transition-all border border-white/5" title="Delete Category"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </div>
           </div>
           <div class="p-5 space-y-3">
@@ -1000,7 +1097,10 @@ service cloud.firestore {
                   </p>
                   <a href="${item.url}" target="_blank" class="text-xs text-slate-400 hover:text-indigo-400 hover:underline truncate max-w-sm inline-block mt-1">${item.url}</a>
                 </div>
-                <button onclick="deleteLink('${cat.id}', '${item.id}')" class="text-slate-500 hover:text-rose-400 bg-white/5 hover:bg-rose-500/20 border border-white/5 p-2 rounded-full shadow-sm transition-all"><i data-lucide="x" class="w-4 h-4"></i></button>
+                <div class="flex gap-1">
+                  <button onclick="window.editLink('${cat.id}', '${item.id}')" class="text-slate-500 hover:text-indigo-400 bg-white/5 hover:bg-indigo-500/20 border border-white/5 p-2 rounded-full shadow-sm transition-all"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                  <button onclick="window.deleteLink('${cat.id}', '${item.id}')" class="text-slate-500 hover:text-rose-400 bg-white/5 hover:bg-rose-500/20 border border-white/5 p-2 rounded-full shadow-sm transition-all"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
               </div>
             `).join('')}
           </div>
@@ -1140,6 +1240,45 @@ service cloud.firestore {
       });
     };
 
+    window.editCategory = function(id) {
+      const category = globalPortalData.find(c => c.id === id);
+      if(!category) return;
+      
+      document.getElementById('editCatId').value = category.id;
+      document.getElementById('editCatType').value = category.type;
+      document.getElementById('editCatName').value = category.category;
+      
+      window.showModal('editCategoryModal');
+      window.selectIcon('editCatIconInput', category.icon || 'folder');
+    };
+
+    window.handleEditCategory = function(e) {
+      e.preventDefault();
+      const id = document.getElementById('editCatId').value;
+      const type = document.getElementById('editCatType').value;
+      const name = document.getElementById('editCatName').value.trim();
+      const icon = document.getElementById('editCatIconInput').value.trim() || 'folder';
+
+      confirmAction('Save Changes', 'Update this section?', 'bg-indigo-600 hover:bg-indigo-500', () => {
+        let data = [...globalPortalData];
+        const index = data.findIndex(c => c.id === id);
+        if (index > -1) {
+          data[index].type = type;
+          data[index].category = name;
+          data[index].icon = icon;
+          
+          // Switch to the correct tab if they changed its type
+          if(activeAdminPortalTab !== type) {
+            window.switchAdminPortalTab(type);
+          }
+
+          setPortalData(data); // Updates Firebase
+          window.hideModal();
+          showToast('Section updated successfully.');
+        }
+      });
+    };
+
     window.handleAddLink = function(e) {
       e.preventDefault();
       const catId = document.getElementById('linkCategoryId').value;
@@ -1180,24 +1319,70 @@ service cloud.firestore {
       });
     };
 
-    window.deleteLink = function(catId, linkId) {
-      confirmAction('Remove Module', 'Are you sure you want to remove this module?', 'bg-rose-600 hover:bg-rose-500', () => {
+    window.editLink = function(catId, linkId) {
+      const category = globalPortalData.find(c => c.id === catId);
+      if(!category) return;
+      
+      const link = category.items.find(i => i.id === linkId);
+      if(!link) return;
+
+      document.getElementById('editLinkCategoryId').value = catId;
+      document.getElementById('editLinkId').value = linkId;
+      document.getElementById('editLinkTitle').value = link.title;
+      document.getElementById('editLinkUrl').value = link.url;
+      document.getElementById('editLinkDesc').value = link.description;
+
+      window.showModal('editLinkModal');
+      window.selectIcon('editLinkIconInput', link.icon || 'link-2');
+    };
+
+    window.handleEditLink = function(e) {
+      e.preventDefault();
+      const catId = document.getElementById('editLinkCategoryId').value;
+      const linkId = document.getElementById('editLinkId').value;
+      const title = document.getElementById('editLinkTitle').value.trim();
+      const url = document.getElementById('editLinkUrl').value.trim();
+      const desc = document.getElementById('editLinkDesc').value.trim();
+      const icon = document.getElementById('editLinkIconInput').value.trim() || 'link-2';
+
+      confirmAction('Save Changes', 'Update this module?', 'bg-indigo-600 hover:bg-indigo-500', () => {
         let data = [...globalPortalData];
         const catIndex = data.findIndex(c => c.id === catId);
-        if(catIndex > -1) {
-          data[catIndex].items = data[catIndex].items.filter(i => i.id !== linkId);
-          setPortalData(data); // Updates Firebase
+        
+        if (catIndex > -1) {
+          const linkIndex = data[catIndex].items.findIndex(i => i.id === linkId);
+          if (linkIndex > -1) {
+            // Keep original colors/bg
+            data[catIndex].items[linkIndex].title = title;
+            data[catIndex].items[linkIndex].url = url;
+            data[catIndex].items[linkIndex].description = desc;
+            data[catIndex].items[linkIndex].icon = icon;
+
+            setPortalData(data); // Updates Firebase
+            window.hideModal();
+            showToast('Module updated successfully.');
+            
+            if (!document.getElementById('viewPortal').classList.contains('hidden')) {
+               renderPortal(document.getElementById('searchInput').value);
+            }
+          }
         }
       });
     };
 
     // --- MODAL CONTROLS ---
     window.showModal = function(modalId) {
-      document.getElementById('modalOverlay').classList.remove('hidden');
-      document.getElementById('categoryModal').classList.add('hidden');
-      document.getElementById('linkModal').classList.add('hidden');
-      document.getElementById('editUserModal').classList.add('hidden');
-      document.getElementById(modalId).classList.remove('hidden');
+      const overlay = document.getElementById('modalOverlay');
+      if (overlay) overlay.classList.remove('hidden');
+      
+      const modals = ['categoryModal', 'linkModal', 'editUserModal', 'editCategoryModal', 'editLinkModal'];
+      modals.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+      
+      const targetModal = document.getElementById(modalId);
+      if(targetModal) targetModal.classList.remove('hidden');
       
       if(modalId === 'categoryModal') {
         window.selectIcon('catIconInput', 'folder');
@@ -1207,7 +1392,8 @@ service cloud.firestore {
     };
 
     window.hideModal = function() {
-      document.getElementById('modalOverlay').classList.add('hidden');
+      const overlay = document.getElementById('modalOverlay');
+      if(overlay) overlay.classList.add('hidden');
       document.querySelectorAll('#modalOverlay form').forEach(f => f.reset());
     };
 
