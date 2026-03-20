@@ -3,24 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Company Portal</title>
+  <title>AccessPortal</title>
   
+  <!-- Web App Icons -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='30' fill='%231e1b4b'/><path d='M30 70 A 20 20 0 0 1 70 70 M40 70 A 10 10 0 0 1 60 70 M20 70 A 30 30 0 0 1 80 70 M50 70 V 40' stroke='%23818cf8' stroke-width='6' fill='none' stroke-linecap='round'/></svg>">
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
+    body { 
+      font-family: 'Outfit', sans-serif; 
+      background-color: #0f172a; /* Deep slate background */
+    }
     
     @keyframes slideInFromBottom {
-      from { opacity: 0; transform: translateY(1rem); }
+      from { opacity: 0; transform: translateY(1.5rem); }
       to { opacity: 1; transform: translateY(0); }
     }
     .animate-in {
-      animation: slideInFromBottom 0.4s ease-out forwards;
+      animation: slideInFromBottom 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       opacity: 0;
     }
     
@@ -33,38 +39,101 @@
       from { opacity: 1; transform: translateX(0); }
       to { opacity: 0; transform: translateX(100%); }
     }
-    .toast-enter { animation: toastSlideIn 0.3s ease-out forwards; }
-    .toast-exit { animation: toastFadeOut 0.3s ease-out forwards; }
+    .toast-enter { animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .toast-exit { animation: toastFadeOut 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     
-    /* Custom Scrollbar for Icon Grid */
+    /* Custom Scrollbar for Dark Mode */
     .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 8px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 8px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
+    /* Animated Background Blobs */
+    @keyframes blob {
+      0% { transform: translate(0px, 0px) scale(1); }
+      33% { transform: translate(30px, -50px) scale(1.1); }
+      66% { transform: translate(-20px, 20px) scale(0.9); }
+      100% { transform: translate(0px, 0px) scale(1); }
+    }
+    .animate-blob {
+      animation: blob 10s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .animation-delay-2000 { animation-delay: 2s; }
+    .animation-delay-4000 { animation-delay: 4s; }
+
+    /* Dark Glassmorphism Utilities */
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+    
+    .glass-card {
+      background: rgba(30, 41, 59, 0.4);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-card:hover {
+      background: rgba(30, 41, 59, 0.7);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px -4px rgba(99, 102, 241, 0.25);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .glass-input {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      color: white;
+    }
+    .glass-input:focus {
+      background: rgba(30, 41, 59, 0.8);
+      border-color: #818cf8;
+      box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
+    }
+    
+    .gradient-text {
+      background: linear-gradient(135deg, #818cf8, #f472b6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
   </style>
 </head>
-<body class="min-h-screen bg-slate-50 text-slate-900 selection:bg-blue-200 flex flex-col">
+<body class="min-h-screen text-slate-200 selection:bg-indigo-500/30 relative overflow-x-hidden flex flex-col">
+
+  <!-- Animated Background Elements (Neon on Dark) -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none z-[-1]">
+    <div class="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-indigo-600 rounded-full mix-blend-screen filter blur-[100px] opacity-20 animate-blob"></div>
+    <div class="absolute top-[20%] right-[-10%] w-[40rem] h-[40rem] bg-teal-500 rounded-full mix-blend-screen filter blur-[100px] opacity-15 animate-blob animation-delay-2000"></div>
+    <div class="absolute bottom-[-20%] left-[20%] w-[40rem] h-[40rem] bg-pink-600 rounded-full mix-blend-screen filter blur-[100px] opacity-20 animate-blob animation-delay-4000"></div>
+  </div>
 
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div>
 
   <!-- Header Section -->
-  <header id="mainHeader" class="bg-white border-b border-slate-200 sticky top-0 z-40 hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+  <header id="mainHeader" class="glass-panel sticky top-0 z-40 hidden border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         
         <!-- Logo & Title -->
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm">
-            <i data-lucide="layout" class="w-6 h-6 text-white"></i>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30 text-white">
+            <i data-lucide="fingerprint" class="w-6 h-6"></i>
           </div>
           <div>
-            <h1 class="text-xl font-bold tracking-tight text-slate-900">Company Portal</h1>
-            <p class="text-xs text-slate-500 font-medium flex items-center gap-2 mt-0.5">
-              <span id="userWelcomeText">Welcome!</span>
-              <span class="text-slate-300">|</span>
-              <i data-lucide="clock" class="w-3 h-3 text-slate-400"></i>
-              <span id="phTimestamp" class="text-slate-600">Loading time...</span>
+            <h1 id="headerPortalName" class="text-xl font-bold tracking-tight text-white">AccessPortal</h1>
+            <p class="text-xs text-slate-400 font-medium flex items-center gap-2 mt-0.5">
+              <span id="userWelcomeText" class="text-indigo-400 font-semibold">Welcome!</span>
+              <span class="text-slate-600">•</span>
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-500"></i>
+              <span id="phTimestamp" class="text-slate-400">Loading time...</span>
             </p>
           </div>
         </div>
@@ -73,31 +142,31 @@
         <div class="flex items-center gap-3">
           <!-- Search Bar -->
           <div id="searchContainer" class="relative w-full md:w-64 lg:w-80">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
               <i data-lucide="search" class="h-4 w-4 text-slate-400"></i>
             </div>
             <input
               type="text"
               id="searchInput"
-              class="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm"
-              placeholder="Search apps, documents..."
+              class="block w-full pl-10 pr-4 py-2.5 glass-input rounded-full leading-5 placeholder-slate-400 transition-all text-sm outline-none"
+              placeholder="Search workspaces..."
             />
           </div>
           
           <!-- Admin Settings Button -->
-          <button id="btnNavSettings" onclick="switchView('settings')" class="hidden flex items-center justify-center gap-2 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium transition-colors">
-            <i data-lucide="settings" class="w-4 h-4"></i>
-            <span class="hidden sm:inline">Admin Panel</span>
+          <button id="btnNavSettings" onclick="switchView('settings')" class="hidden flex items-center justify-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 rounded-full text-sm font-semibold transition-all shadow-sm">
+            <i data-lucide="settings-2" class="w-4 h-4 text-indigo-400"></i>
+            <span class="hidden sm:inline">Settings</span>
           </button>
 
           <!-- Back to Portal Button -->
-          <button id="btnNavPortal" onclick="switchView('portal')" class="hidden flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-medium transition-colors">
-            <i data-lucide="layout-grid" class="w-4 h-4"></i>
+          <button id="btnNavPortal" onclick="switchView('portal')" class="hidden flex items-center justify-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 rounded-full text-sm font-semibold transition-all shadow-sm">
+            <i data-lucide="layout-grid" class="w-4 h-4 text-indigo-400"></i>
             <span class="hidden sm:inline">Portal</span>
           </button>
 
           <!-- Logout Button -->
-          <button onclick="logout()" class="flex items-center justify-center gap-2 px-3 py-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium transition-colors">
+          <button onclick="logout()" class="flex items-center justify-center gap-2 px-4 py-2.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-full text-sm font-semibold transition-all">
             <i data-lucide="log-out" class="w-4 h-4"></i>
             <span class="hidden sm:inline">Logout</span>
           </button>
@@ -111,80 +180,88 @@
 
   <!-- 1. LOGIN VIEW -->
   <main id="viewLogin" class="flex-grow flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-8 w-full max-w-md animate-in">
-      <div class="text-center mb-8">
-        <div class="inline-flex w-14 h-14 bg-blue-600 rounded-2xl items-center justify-center shadow-md mb-4">
-          <i data-lucide="layout" class="w-8 h-8 text-white"></i>
+    <div class="glass-panel rounded-3xl p-10 w-full max-w-md animate-in relative overflow-hidden group">
+      <div class="relative z-10 text-center mb-10">
+        <div class="inline-flex w-16 h-16 bg-gradient-to-br from-indigo-500 to-pink-500 rounded-3xl items-center justify-center shadow-xl shadow-indigo-500/20 mb-6 text-white transform rotate-3">
+          <i data-lucide="fingerprint" class="w-8 h-8"></i>
         </div>
-        <h2 class="text-2xl font-bold text-slate-900">Login to Portal</h2>
-        <p class="text-slate-500 text-sm mt-2">Enter your credentials to access.</p>
+        <h2 class="text-3xl font-bold text-white mb-2">Access<span class="gradient-text">Portal</span></h2>
+        <p class="text-slate-400 text-sm">Verify your identity to continue.</p>
+        <div id="firebaseStatusText" class="text-xs text-indigo-400 mt-2 font-mono opacity-80">Connecting to Firebase...</div>
       </div>
       
-      <form id="loginForm" class="space-y-5" onsubmit="handleLogin(event)">
+      <form id="loginForm" class="relative z-10 space-y-6" onsubmit="handleLogin(event)">
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Username</label>
-          <input type="text" id="loginUsername" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+          <label class="block text-sm font-semibold text-slate-300 mb-1.5 ml-1">Username</label>
+          <input type="text" id="loginUsername" required class="w-full px-4 py-3 glass-input rounded-2xl outline-none transition-all">
         </div>
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
-          <input type="password" id="loginPassword" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+          <label class="block text-sm font-semibold text-slate-300 mb-1.5 ml-1">Password</label>
+          <div class="relative">
+            <input type="password" id="loginPassword" required class="w-full px-4 py-3 glass-input rounded-2xl outline-none transition-all pr-12">
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-indigo-400 transition-colors">
+              <i data-lucide="eye" id="loginEyeIcon" class="w-5 h-5"></i>
+            </button>
+          </div>
         </div>
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition-colors flex justify-center items-center gap-2">
-          Sign In <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        <button type="submit" id="loginSubmitBtn" disabled class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-2xl transition-all flex justify-center items-center gap-2 mt-6 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5">
+          Authenticate <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </button>
       </form>
     </div>
   </main>
 
   <!-- 2. PORTAL VIEW (Main Dashboard) -->
-  <main id="viewPortal" class="hidden flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <main id="viewPortal" class="hidden flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
     
-    <!-- Navigation Tabs for Separating Web Apps and Documents -->
-    <div class="flex gap-2 border-b border-slate-200 mb-8">
-      <button onclick="switchPortalTab('webapp')" id="tabAppBtn" class="flex items-center gap-2 px-5 py-3 border-b-2 font-medium text-sm transition-colors border-blue-600 text-blue-600">
-        <i data-lucide="layout" class="w-4 h-4"></i> Web Applications
+    <!-- Navigation Tabs -->
+    <div class="flex gap-2 border-b border-slate-700/50 mb-10 pb-1">
+      <button onclick="switchPortalTab('webapp')" id="tabAppBtn" class="flex items-center gap-2 px-6 py-3 border-b-2 font-bold text-sm transition-all border-indigo-400 text-indigo-400">
+        <i data-lucide="layout" class="w-4.5 h-4.5"></i> Applications
       </button>
-      <button onclick="switchPortalTab('document')" id="tabDocBtn" class="flex items-center gap-2 px-5 py-3 border-b-2 font-medium text-sm transition-colors border-transparent text-slate-500 hover:text-slate-700">
-        <i data-lucide="folder-open" class="w-4 h-4"></i> Documents
+      <button onclick="switchPortalTab('document')" id="tabDocBtn" class="flex items-center gap-2 px-6 py-3 border-b-2 border-transparent font-medium text-sm transition-all text-slate-400 hover:text-slate-200 hover:border-slate-500">
+        <i data-lucide="folder-open" class="w-4.5 h-4.5"></i> Documents
       </button>
     </div>
 
     <div id="portalContent" class="space-y-12">
-      <!-- JavaScript will inject Categories and Links here based on the selected tab -->
+      <!-- JavaScript will inject Categories and Links here -->
     </div>
   </main>
 
   <!-- 3. SETTINGS / ADMIN PANEL VIEW -->
-  <main id="viewSettings" class="hidden flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <main id="viewSettings" class="hidden flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <div class="flex flex-col md:flex-row gap-8">
       
       <!-- Settings Sidebar -->
       <aside class="w-full md:w-64 shrink-0">
-        <h2 class="text-xl font-bold text-slate-800 mb-6">Admin Panel</h2>
-        <nav class="flex flex-col gap-2">
-          <button onclick="switchSettingsTab('links')" id="tabBtnLinks" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-colors bg-blue-50 text-blue-700">
-            <i data-lucide="layers" class="w-5 h-5"></i>
-            Manage Links
-          </button>
-          <button onclick="switchSettingsTab('users')" id="tabBtnUsers" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-colors text-slate-600 hover:bg-slate-100 hover:text-slate-900">
-            <i data-lucide="users" class="w-5 h-5"></i>
-            User Accounts
-          </button>
-        </nav>
+        <div class="glass-panel rounded-3xl p-6">
+          <h2 class="text-xl font-bold text-white mb-6">Preferences</h2>
+          <nav class="flex flex-col gap-2">
+            <button onclick="switchSettingsTab('links')" id="tabBtnLinks" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-left font-semibold transition-all bg-white/10 shadow-sm text-indigo-400">
+              <i data-lucide="layers" class="w-5 h-5"></i>
+              Workspaces
+            </button>
+            <button onclick="switchSettingsTab('users')" id="tabBtnUsers" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-left font-medium transition-all text-slate-400 hover:bg-white/5 hover:text-slate-200">
+              <i data-lucide="users" class="w-5 h-5"></i>
+              Directory
+            </button>
+          </nav>
+        </div>
       </aside>
 
       <!-- Settings Content Area -->
-      <div class="flex-grow bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 min-h-[500px]">
+      <div class="flex-grow glass-panel rounded-3xl p-6 md:p-8 min-h-[600px]">
         
         <!-- TAB: LINKS & CATEGORIES -->
         <div id="tabContentLinks" class="block animate-in">
-          <div class="flex justify-between items-center mb-6">
+          <div class="flex justify-between items-center mb-8">
             <div>
-              <h3 class="text-lg font-bold text-slate-900">Categories & Links</h3>
-              <p class="text-sm text-slate-500">Add or remove apps and documents from the portal.</p>
+              <h3 class="text-2xl font-bold text-white">Workspaces</h3>
+              <p class="text-sm text-slate-400 mt-1">Organize and manage your portal modules.</p>
             </div>
-            <button onclick="showModal('categoryModal')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors">
-              <i data-lucide="plus" class="w-4 h-4"></i> Category
+            <button onclick="showModal('categoryModal')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-full text-sm font-semibold flex items-center gap-2 shadow-lg shadow-indigo-500/20 hover:-translate-y-0.5 transition-all">
+              <i data-lucide="plus" class="w-4 h-4"></i> New Section
             </button>
           </div>
           
@@ -195,53 +272,58 @@
 
         <!-- TAB: USERS -->
         <div id="tabContentUsers" class="hidden animate-in">
-          <div class="flex justify-between items-center mb-6">
+          <div class="flex justify-between items-center mb-8">
             <div>
-              <h3 class="text-lg font-bold text-slate-900">User Accounts</h3>
-              <p class="text-sm text-slate-500">Manage users who can access the portal.</p>
+              <h3 class="text-2xl font-bold text-white">User Directory</h3>
+              <p class="text-sm text-slate-400 mt-1">Manage portal access and personalizations. Changes sync instantly.</p>
             </div>
           </div>
 
           <!-- Add User Form -->
-          <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 mb-8">
-            <h4 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-              <i data-lucide="user-plus" class="w-4 h-4 text-blue-600"></i> Add User
+          <div class="bg-white/5 border border-white/10 rounded-3xl p-6 mb-8 shadow-sm">
+            <h4 class="font-bold text-white mb-5 flex items-center gap-2">
+              <i data-lucide="user-plus" class="w-5 h-5 text-indigo-400"></i> Enroll User
             </h4>
-            <form onsubmit="handleAddUser(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <form onsubmit="handleAddUser(event)" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
               <div>
-                <label class="block text-xs font-medium text-slate-600 mb-1">Username</label>
-                <input type="text" id="newUsername" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <label class="block text-xs font-semibold text-slate-400 mb-1.5 ml-1">Username</label>
+                <input type="text" id="newUsername" required class="w-full px-4 py-2.5 glass-input rounded-xl text-sm outline-none">
               </div>
               <div>
-                <label class="block text-xs font-medium text-slate-600 mb-1">Password</label>
-                <input type="password" id="newPassword" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <label class="block text-xs font-semibold text-slate-400 mb-1.5 ml-1">Password</label>
+                <input type="text" id="newPassword" required class="w-full px-4 py-2.5 glass-input rounded-xl text-sm outline-none">
               </div>
               <div>
-                <label class="block text-xs font-medium text-slate-600 mb-1">Role</label>
-                <select id="newRole" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white">
-                  <option value="user">User</option>
-                  <option value="admin">Admin</option>
+                <label class="block text-xs font-semibold text-slate-400 mb-1.5 ml-1">Access Level</label>
+                <select id="newRole" class="w-full px-4 py-2.5 glass-input rounded-xl text-sm outline-none [&>option]:bg-slate-800">
+                  <option value="user">Standard</option>
+                  <option value="admin">Administrator</option>
                 </select>
               </div>
               <div>
-                <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2 rounded-lg text-sm transition-colors">
-                  Add User
+                <label class="block text-xs font-semibold text-slate-400 mb-1.5 ml-1">Portal Alias</label>
+                <input type="text" id="newPortalName" placeholder="AccessPortal" class="w-full px-4 py-2.5 glass-input rounded-xl text-sm outline-none">
+              </div>
+              <div>
+                <button type="submit" class="w-full bg-white/10 hover:bg-white/20 text-white font-semibold py-2.5 rounded-xl text-sm transition-all shadow-md">
+                  Enroll
                 </button>
               </div>
             </form>
           </div>
 
           <!-- User List -->
-          <div class="border border-slate-200 rounded-xl overflow-hidden">
-            <table class="w-full text-left text-sm text-slate-600">
-              <thead class="bg-slate-50 border-b border-slate-200 text-slate-800">
+          <div class="bg-white/5 border border-white/10 rounded-3xl overflow-hidden shadow-sm">
+            <table class="w-full text-left text-sm text-slate-300 min-w-max">
+              <thead class="bg-white/5 border-b border-white/10">
                 <tr>
-                  <th class="px-4 py-3 font-semibold">Username</th>
-                  <th class="px-4 py-3 font-semibold">Role</th>
-                  <th class="px-4 py-3 font-semibold text-right">Action</th>
+                  <th class="px-5 py-4 font-bold text-slate-200">Identity</th>
+                  <th class="px-5 py-4 font-bold text-slate-200">Access</th>
+                  <th class="px-5 py-4 font-bold text-slate-200">Alias</th>
+                  <th class="px-5 py-4 font-bold text-slate-200 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody id="adminUsersList" class="divide-y divide-slate-100 bg-white">
+              <tbody id="adminUsersList" class="divide-y divide-white/10">
                 <!-- JS renders user list here -->
               </tbody>
             </table>
@@ -254,74 +336,105 @@
   </main>
 
   <!-- Footer -->
-  <footer id="mainFooter" class="border-t border-slate-200 bg-white mt-auto py-6">
+  <footer id="mainFooter" class="mt-auto py-8">
     <div class="max-w-7xl mx-auto px-4 text-center text-sm text-slate-500 flex flex-col items-center justify-center">
-      <i data-lucide="layout" class="w-5 h-5 text-slate-300 mb-2"></i>
-      <p id="footerYear">© Company Portal.</p>
+      <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center mb-3">
+        <i data-lucide="box" class="w-4 h-4 text-slate-400"></i>
+      </div>
+      <p id="footerYear" class="font-medium">© AccessPortal. Connected to Firebase.</p>
     </div>
   </footer>
 
-  <!-- CUSTOM MODALS FOR SETTINGS -->
-  
-  <!-- Overlay -->
-  <div id="modalOverlay" class="hidden fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center p-4">
+  <!-- CUSTOM MODALS -->
+  <div id="modalOverlay" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     
     <!-- Modal: Add Category -->
-    <div id="categoryModal" class="hidden bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-      <h3 class="text-lg font-bold mb-4">New Category</h3>
-      <form onsubmit="handleAddCategory(event)" class="space-y-4">
+    <div id="categoryModal" class="hidden glass-panel rounded-3xl p-8 w-full max-w-md shadow-2xl">
+      <h3 class="text-xl font-bold text-white mb-6">New Section</h3>
+      <form onsubmit="handleAddCategory(event)" class="space-y-5">
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Category Type</label>
-          <select id="catType" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-500 bg-white">
+          <label class="block text-sm font-semibold text-slate-300 mb-1.5 ml-1">Type</label>
+          <select id="catType" class="w-full px-4 py-3 glass-input rounded-xl outline-none [&>option]:bg-slate-800">
             <option value="webapp">Web Application</option>
             <option value="document">Document</option>
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Category Name</label>
-          <input type="text" id="catName" required placeholder="E.g., Internal Tools" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-500">
+          <label class="block text-sm font-semibold text-slate-300 mb-1.5 ml-1">Name</label>
+          <input type="text" id="catName" required placeholder="E.g., Design Assets" class="w-full px-4 py-3 glass-input rounded-xl outline-none">
         </div>
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-2">Select Icon</label>
+          <label class="block text-sm font-semibold text-slate-300 mb-2 ml-1">Symbol</label>
           <input type="hidden" id="catIconInput" required>
           <div class="grid grid-cols-6 gap-2 max-h-40 overflow-y-auto p-1 custom-scrollbar" id="catIconGrid">
             <!-- JS renders icons here -->
           </div>
         </div>
-        <div class="flex justify-end gap-2 mt-6">
-          <button type="button" onclick="hideModal()" class="px-4 py-2 text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
-          <button type="submit" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors">Save</button>
+        <div class="flex justify-end gap-3 mt-8">
+          <button type="button" onclick="hideModal()" class="px-5 py-2.5 text-slate-300 bg-white/10 hover:bg-white/20 rounded-xl font-semibold transition-all">Cancel</button>
+          <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold shadow-md shadow-indigo-500/20">Create</button>
         </div>
       </form>
     </div>
 
     <!-- Modal: Add Link -->
-    <div id="linkModal" class="hidden bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-      <h3 class="text-lg font-bold mb-4">Add Link</h3>
-      <form onsubmit="handleAddLink(event)" class="space-y-4">
+    <div id="linkModal" class="hidden glass-panel rounded-3xl p-8 w-full max-w-md shadow-2xl">
+      <h3 class="text-xl font-bold text-white mb-6">Add Module</h3>
+      <form onsubmit="handleAddLink(event)" class="space-y-5">
         <input type="hidden" id="linkCategoryId">
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Title</label>
-          <input type="text" id="linkTitle" required class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-500">
+          <label class="block text-sm font-semibold text-slate-300 mb-1.5 ml-1">Title</label>
+          <input type="text" id="linkTitle" required class="w-full px-4 py-3 glass-input rounded-xl outline-none">
         </div>
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">URL (Link)</label>
-          <input type="text" id="linkUrl" required placeholder="https://..." class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-500">
+          <label class="block text-sm font-semibold text-slate-300 mb-1.5 ml-1">Target URL</label>
+          <input type="text" id="linkUrl" required placeholder="https://..." class="w-full px-4 py-3 glass-input rounded-xl outline-none">
         </div>
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-2">Select Icon</label>
+          <label class="block text-sm font-semibold text-slate-300 mb-2 ml-1">Icon</label>
           <input type="hidden" id="linkIconInput" required>
           <div class="grid grid-cols-6 gap-2 max-h-32 overflow-y-auto p-1 custom-scrollbar" id="linkIconGrid">
             <!-- JS renders icons here -->
           </div>
         </div>
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
-          <textarea id="linkDesc" rows="2" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-500"></textarea>
+          <label class="block text-sm font-semibold text-slate-300 mb-1.5 ml-1">Description</label>
+          <textarea id="linkDesc" rows="2" class="w-full px-4 py-3 glass-input rounded-xl outline-none"></textarea>
         </div>
-        <div class="flex justify-end gap-2 mt-6">
-          <button type="button" onclick="hideModal()" class="px-4 py-2 text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
-          <button type="submit" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors">Save Link</button>
+        <div class="flex justify-end gap-3 mt-8">
+          <button type="button" onclick="hideModal()" class="px-5 py-2.5 text-slate-300 bg-white/10 hover:bg-white/20 rounded-xl font-semibold transition-all">Cancel</button>
+          <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold shadow-md shadow-indigo-500/20">Deploy</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal: Edit User -->
+    <div id="editUserModal" class="hidden glass-panel rounded-3xl p-8 w-full max-w-md shadow-2xl">
+      <h3 class="text-xl font-bold text-white mb-6">Modify User</h3>
+      <form onsubmit="handleEditUser(event)" class="space-y-5">
+        <input type="hidden" id="editUserId">
+        <div>
+          <label class="block text-sm font-semibold text-slate-300 mb-1.5 ml-1">Username</label>
+          <input type="text" id="editUsername" required class="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 text-slate-500 rounded-xl outline-none cursor-not-allowed" readonly>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-300 mb-1.5 ml-1">Password</label>
+          <input type="text" id="editPassword" required class="w-full px-4 py-3 glass-input rounded-xl outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-300 mb-1.5 ml-1">Access Level</label>
+          <select id="editRole" class="w-full px-4 py-3 glass-input rounded-xl outline-none [&>option]:bg-slate-800">
+            <option value="user">Standard</option>
+            <option value="admin">Administrator</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-300 mb-1.5 ml-1">Portal Alias</label>
+          <input type="text" id="editPortalName" required class="w-full px-4 py-3 glass-input rounded-xl outline-none">
+        </div>
+        <div class="flex justify-end gap-3 mt-8">
+          <button type="button" onclick="hideModal()" class="px-5 py-2.5 text-slate-300 bg-white/10 hover:bg-white/20 rounded-xl font-semibold transition-all">Cancel</button>
+          <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold shadow-md shadow-indigo-500/20">Update</button>
         </div>
       </form>
     </div>
@@ -329,107 +442,265 @@
   </div>
 
   <!-- Modal: Confirmation Warning -->
-  <div id="confirmModal" class="hidden fixed inset-0 bg-slate-900/60 z-[60] flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-in">
-      <div class="flex items-center gap-3 text-amber-500 mb-4">
-        <i data-lucide="alert-triangle" class="w-6 h-6"></i>
-        <h3 class="text-lg font-bold text-slate-900" id="confirmTitle">Confirm Action</h3>
+  <div id="confirmModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+    <div class="glass-panel rounded-3xl p-8 w-full max-w-sm shadow-2xl animate-in text-center">
+      <div class="inline-flex w-16 h-16 bg-amber-500/20 text-amber-400 rounded-full items-center justify-center mb-4 border border-amber-500/30">
+        <i data-lucide="alert-triangle" class="w-8 h-8"></i>
       </div>
-      <p id="confirmMessage" class="text-slate-600 mb-6 text-sm">Are you sure you want to proceed?</p>
-      <div class="flex justify-end gap-2">
-        <button onclick="closeConfirmModal()" class="px-4 py-2 text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg font-medium transition-colors text-sm">Cancel</button>
-        <button id="confirmBtn" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors text-sm">Yes, Proceed</button>
+      <h3 class="text-xl font-bold text-white mb-2" id="confirmTitle">Confirm</h3>
+      <p id="confirmMessage" class="text-slate-400 mb-8 text-sm leading-relaxed">Are you sure?</p>
+      <div class="flex justify-center gap-3 w-full">
+        <button onclick="closeConfirmModal()" class="flex-1 px-4 py-3 text-slate-300 bg-white/10 hover:bg-white/20 rounded-xl font-semibold transition-all">Cancel</button>
+        <button id="confirmBtn" class="flex-1 px-4 py-3 text-white rounded-xl font-bold transition-all shadow-md">Proceed</button>
       </div>
     </div>
   </div>
 
-  <script>
-    // Set Footer Year
-    document.getElementById('footerYear').innerText = `© ${new Date().getFullYear()} Company Portal. All rights reserved.`;
-
-    // --- PHILIPPINE TIMEZONE CLOCK ---
-    function updatePhTime() {
-      const now = new Date();
-      // Format to Philippine Time
-      const options = { 
-        timeZone: 'Asia/Manila', 
-        weekday: 'short', 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric', 
-        hour: '2-digit', 
-        minute: '2-digit', 
-        second: '2-digit' 
-      };
-      const phTimeString = now.toLocaleString('en-PH', options);
-      
-      const timeElement = document.getElementById('phTimestamp');
-      if(timeElement) {
-        timeElement.innerText = phTimeString + " (PHT)";
-      }
+  <!-- Modal: Firebase Rules Error -->
+  <div id="firebaseErrorModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+    <div class="glass-panel rounded-3xl p-8 w-full max-w-lg shadow-2xl animate-in text-center border border-rose-500/30">
+      <div class="inline-flex w-16 h-16 bg-rose-500/20 text-rose-400 rounded-full items-center justify-center mb-4 border border-rose-500/30">
+        <i data-lucide="shield-alert" class="w-8 h-8"></i>
+      </div>
+      <h3 class="text-2xl font-bold text-white mb-3">Database Permission Denied</h3>
+      <p class="text-slate-300 mb-4 text-sm leading-relaxed">
+        Your app is connected to Firebase, but it's blocking access. To fix this, update your Firestore Security Rules in the Firebase Console:
+      </p>
+      <div class="bg-slate-900 rounded-xl p-4 text-left mb-6 overflow-x-auto border border-white/5">
+        <pre class="text-xs text-emerald-400 font-mono"><code>rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
     }
-    // Update immediately, then every second
-    updatePhTime();
-    setInterval(updatePhTime, 1000);
+  }
+}</code></pre>
+      </div>
+      <div class="flex justify-center w-full">
+        <button onclick="closeFirebaseErrorModal()" class="px-6 py-3 text-white bg-rose-600 hover:bg-rose-500 rounded-xl font-bold transition-all shadow-md">I Understand</button>
+      </div>
+    </div>
+  </div>
 
-    // --- DATA SYSTEM (LOCALSTORAGE) ---
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // --- FIREBASE INITIALIZATION ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyBp23Ghe6yVbxXwYHvpDT1bS1R4LraEFQg",
+      authDomain: "accessportal-32d03.firebaseapp.com",
+      databaseURL: "https://accessportal-32d03-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "accessportal-32d03",
+      storageBucket: "accessportal-32d03.firebasestorage.app",
+      messagingSenderId: "857849232125",
+      appId: "1:857849232125:web:42d929eef021bfd1db5c94",
+      measurementId: "G-GHGHY3193B"
+    };
+
+    const appId = firebaseConfig.projectId; 
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // --- GLOBAL APP STATE ---
+    let globalUsers = [];
+    let globalPortalData = [];
+    let unsubPortalData = null; // Used to disconnect listeners when logging out internally
 
     const defaultUsers = [
-      { id: 'u1', username: 'admin', password: 'admin123', role: 'admin' },
-      { id: 'u2', username: 'user', password: 'user123', role: 'user' }
+      { id: 'u1', username: 'admin', password: 'admin123', role: 'admin', portalName: 'AccessPortal Admin' },
+      { id: 'u2', username: 'user', password: 'user123', role: 'user', portalName: 'AccessPortal' }
     ];
 
     const defaultPortalData = [
       {
-        id: 'c1',
-        type: 'webapp',
-        category: "HR & Analytics",
-        icon: "layout",
+        id: 'c1', type: 'webapp', category: "Management", icon: "users-2",
         items: [
-          { id: 'i1', title: "HR Management System", description: "Manage employee records, leaves, and payroll.", url: "#hr-system", icon: "users", color: "text-blue-600", bg: "bg-blue-100" },
-          { id: 'i2', title: "Analytics Dashboard", description: "View real-time performance metrics.", url: "#analytics", icon: "bar-chart-3", color: "text-indigo-600", bg: "bg-indigo-100" }
+          { id: 'i1', title: "HR Platform", description: "Team directory, leaves, and payroll management.", url: "#hr", icon: "users", color: "text-blue-400", bg: "bg-blue-500/20" },
+          { id: 'i2', title: "Metrics Dashboard", description: "Real-time KPIs and growth tracking.", url: "#analytics", icon: "pie-chart", color: "text-indigo-400", bg: "bg-indigo-500/20" }
         ]
       },
       {
-        id: 'c2',
-        type: 'document',
-        category: "Company Policies",
-        icon: "folder-open",
+        id: 'c2', type: 'document', category: "Company Policies", icon: "library",
         items: [
-          { id: 'i3', title: "Employee Handbook", description: "Company policies and operational guidelines.", url: "#handbook", icon: "book-open", color: "text-amber-600", bg: "bg-amber-100" },
-          { id: 'i4', title: "Q1 Financial Report", description: "Detailed quarterly earnings and expenses.", url: "#finance", icon: "file-spreadsheet", color: "text-green-600", bg: "bg-green-100" }
+          { id: 'i3', title: "Employee Guide", description: "Core values, rules, and benefits overview.", url: "#handbook", icon: "book-open", color: "text-amber-400", bg: "bg-amber-500/20" },
+          { id: 'i4', title: "Brand Assets", description: "Logos, fonts, and style guidelines.", url: "#brand", icon: "palette", color: "text-rose-400", bg: "bg-rose-500/20" }
         ]
       }
     ];
 
-    function initData() {
-      if (!localStorage.getItem('portal_users')) {
-        localStorage.setItem('portal_users', JSON.stringify(defaultUsers));
+    // --- ERROR HANDLER PARA SA FIRESTORE PERMISSIONS ---
+    const handleFirestoreError = (error) => {
+      console.error("Firestore sync error:", error);
+      if (error.code === 'permission-denied') {
+        document.getElementById('firebaseErrorModal').classList.remove('hidden');
+        const statusText = document.getElementById('firebaseStatusText');
+        if(statusText) {
+          statusText.innerText = "Access Denied by Security Rules";
+          statusText.classList.replace('text-indigo-400', 'text-rose-400');
+          statusText.classList.replace('text-emerald-400', 'text-rose-400');
+        }
+      } else {
+        showToast('Database connection error.', 'error');
       }
-      
-      // Migration check: Ensure data has the new 'type' property (webapp/document)
-      let currentData = JSON.parse(localStorage.getItem('portal_data'));
-      if (!currentData || (currentData.length > 0 && !currentData[0].type)) {
-        localStorage.setItem('portal_data', JSON.stringify(defaultPortalData));
-      }
+    };
+
+    window.closeFirebaseErrorModal = function() {
+      document.getElementById('firebaseErrorModal').classList.add('hidden');
+    };
+
+    // --- FIREBASE SYNC LISTENERS ---
+    
+    // 1. Sync internal user accounts across devices
+    function setupUsersListener() {
+        const usersDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'portal_system', 'users');
+        
+        onSnapshot(usersDocRef, (snapshot) => {
+            if (snapshot.exists()) {
+                globalUsers = snapshot.data().users || [];
+            } else {
+                // Seed initial data if first time using the app
+                globalUsers = defaultUsers;
+                setDoc(usersDocRef, { users: globalUsers }).catch(handleFirestoreError);
+            }
+            // Update admin UI if it is currently open
+            if (!document.getElementById('viewSettings').classList.contains('hidden')) {
+                renderAdminUsers();
+            }
+        }, handleFirestoreError);
     }
 
-    const getUsers = () => JSON.parse(localStorage.getItem('portal_users'));
-    const setUsers = (users) => localStorage.setItem('portal_users', JSON.stringify(users));
-    const getPortalData = () => JSON.parse(localStorage.getItem('portal_data'));
-    const setPortalData = (data) => localStorage.setItem('portal_data', JSON.stringify(data));
+    // 2. Sync portal links strictly for the logged-in internal user
+    function setupPortalDataListener(internalUserId) {
+        if (unsubPortalData) unsubPortalData(); // Stop listening to old user's data
+
+        const dataDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'portal_data', internalUserId);
+
+        unsubPortalData = onSnapshot(dataDocRef, (snapshot) => {
+            if (snapshot.exists()) {
+                globalPortalData = snapshot.data().data || [];
+            } else {
+                // Seed default portal data for new users
+                globalPortalData = defaultPortalData;
+                setDoc(dataDocRef, { data: globalPortalData }).catch(handleFirestoreError);
+            }
+            
+            // Immediately render changes to the screen
+            if (!document.getElementById('viewPortal').classList.contains('hidden')) {
+                renderPortal(document.getElementById('searchInput').value);
+            }
+            if (!document.getElementById('viewSettings').classList.contains('hidden')) {
+                renderAdminLinks();
+            }
+        }, handleFirestoreError);
+    }
+
+    // --- FIREBASE DATA MUTATORS ---
+    async function setUsers(newUsersArray) {
+        globalUsers = newUsersArray; // Optimistic local update
+        try {
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'portal_system', 'users'), { users: newUsersArray });
+        } catch (error) {
+            handleFirestoreError(error);
+        }
+    }
+
+    async function setPortalData(newDataArray) {
+        const user = getCurrentUser();
+        if (!user) return;
+        globalPortalData = newDataArray; // Optimistic local update
+        try {
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'portal_data', user.id), { data: newDataArray });
+        } catch (error) {
+            handleFirestoreError(error);
+        }
+    }
+
+    // --- AUTHENTICATION FLOW ---
+    const initFirebaseAuth = async () => {
+      try {
+        // Connected to your personal Firebase - Using Anonymous Auth to establish connection
+        await signInAnonymously(auth);
+      } catch (error) {
+        console.error("Firebase authentication failed:", error);
+        const statusText = document.getElementById('firebaseStatusText');
+        if(statusText) {
+            statusText.innerText = "Cloud Connection Failed.";
+            statusText.classList.replace('text-indigo-400', 'text-rose-400');
+            statusText.classList.replace('text-emerald-400', 'text-rose-400');
+        }
+      }
+    };
+
+    onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+         const statusText = document.getElementById('firebaseStatusText');
+         if(statusText && !statusText.classList.contains('text-rose-400')) {
+             statusText.innerText = "Connected to Cloud Sync";
+             statusText.classList.replace('text-indigo-400', 'text-emerald-400');
+         }
+         document.getElementById('loginSubmitBtn').disabled = false;
+         
+         // Start fetching global users list
+         setupUsersListener();
+         
+         // Check if already internally logged in
+         const currentUser = getCurrentUser();
+         if (currentUser) {
+             setupPortalDataListener(currentUser.id);
+             window.switchView('portal');
+         } else {
+             window.switchView('login');
+         }
+      }
+    });
+
+    // Start connection
+    initFirebaseAuth();
+
+    // --- LOCAL SESSION MANAGEMENT ---
     const getCurrentUser = () => JSON.parse(sessionStorage.getItem('portal_currentUser'));
     const setCurrentUser = (user) => {
       if (user) sessionStorage.setItem('portal_currentUser', JSON.stringify(user));
       else sessionStorage.removeItem('portal_currentUser');
     };
 
+    // --- PASSWORD TOGGLE FUNCTION ---
+    window.togglePasswordVisibility = function() {
+      const pwdInput = document.getElementById('loginPassword');
+      const eyeIcon = document.getElementById('loginEyeIcon');
+      if (pwdInput.type === 'password') {
+        pwdInput.type = 'text';
+        eyeIcon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        pwdInput.type = 'password';
+        eyeIcon.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
+    };
+
+    // --- PHILIPPINE TIMEZONE CLOCK ---
+    function updatePhTime() {
+      const now = new Date();
+      const options = { 
+        timeZone: 'Asia/Manila', weekday: 'short', month: 'short', 
+        day: 'numeric', hour: '2-digit', minute: '2-digit'
+      };
+      const phTimeString = now.toLocaleString('en-PH', options);
+      const timeElement = document.getElementById('phTimestamp');
+      if(timeElement) timeElement.innerText = phTimeString + " PHT";
+    }
+    updatePhTime();
+    setInterval(updatePhTime, 1000);
+
     // --- ICONS & CONFIRMATION SYSTEM ---
     const availableIcons = [
-      'link-2', 'layout', 'folder', 'folder-open', 'users', 'file-text', 'bar-chart-3', 
-      'book-open', 'file-spreadsheet', 'palette', 'github', 'pen-tool', 'external-link', 
-      'globe', 'mail', 'message-square', 'camera', 'video', 'music', 'shopping-cart', 
-      'settings', 'shield', 'star', 'heart', 'zap', 'cloud', 'bell', 'calendar', 'check-circle'
+      'link-2', 'layout', 'folder', 'folder-open', 'users', 'users-2', 'file-text', 'pie-chart', 
+      'book-open', 'database', 'palette', 'github', 'cpu', 'external-link', 'library',
+      'globe', 'terminal', 'activity', 'camera', 'video', 'music', 'shopping-bag', 
+      'settings', 'shield', 'star', 'zap', 'cloud', 'bell', 'wifi', 'check-circle'
     ];
 
     function renderIconGrids() {
@@ -437,8 +708,8 @@
         const grid = document.getElementById(gridId);
         if(!grid) return;
         grid.innerHTML = availableIcons.map(icon => `
-          <button type="button" onclick="selectIcon('${inputId}', '${icon}')" id="btn_${inputId}_${icon}" class="flex items-center justify-center p-2.5 border border-slate-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-colors">
-            <i data-lucide="${icon}" class="w-5 h-5 text-slate-600"></i>
+          <button type="button" onclick="selectIcon('${inputId}', '${icon}')" id="btn_${inputId}_${icon}" class="flex items-center justify-center p-2.5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all shadow-sm">
+            <i data-lucide="${icon}" class="w-5 h-5 text-slate-400"></i>
           </button>
         `).join('');
       };
@@ -446,33 +717,39 @@
       renderGrid('linkIconGrid', 'linkIconInput');
     }
 
-    function selectIcon(inputId, iconName) {
+    window.selectIcon = function(inputId, iconName) {
       document.getElementById(inputId).value = iconName;
       document.querySelectorAll(`[id^="btn_${inputId}_"]`).forEach(btn => {
-        btn.classList.remove('bg-blue-100', 'border-blue-500', 'ring-2', 'ring-blue-200');
+        btn.classList.remove('bg-indigo-500/20', 'border-indigo-500/50', 'ring-2', 'ring-indigo-500/30');
+        btn.classList.add('bg-white/5', 'border-white/10');
       });
       const selectedBtn = document.getElementById(`btn_${inputId}_${iconName}`);
-      if(selectedBtn) selectedBtn.classList.add('bg-blue-100', 'border-blue-500', 'ring-2', 'ring-blue-200');
-    }
+      if(selectedBtn) {
+        selectedBtn.classList.remove('bg-white/5', 'border-white/10');
+        selectedBtn.classList.add('bg-indigo-500/20', 'border-indigo-500/50', 'ring-2', 'ring-indigo-500/30');
+      }
+    };
 
     let pendingAction = null;
     function confirmAction(title, message, btnClass, actionCallback) {
       document.getElementById('confirmTitle').innerText = title;
       document.getElementById('confirmMessage').innerText = message;
       const btn = document.getElementById('confirmBtn');
-      btn.className = `px-4 py-2 text-white rounded-lg font-medium transition-colors text-sm ${btnClass}`;
+      
+      btn.className = `flex-1 px-4 py-3 text-white rounded-xl font-bold transition-all shadow-md ${btnClass}`;
+      
       pendingAction = actionCallback;
       document.getElementById('confirmModal').classList.remove('hidden');
     }
 
-    function closeConfirmModal() {
+    window.closeConfirmModal = function() {
       document.getElementById('confirmModal').classList.add('hidden');
       pendingAction = null;
-    }
+    };
 
     document.getElementById('confirmBtn').addEventListener('click', () => {
       if (pendingAction) pendingAction();
-      closeConfirmModal();
+      window.closeConfirmModal();
     });
 
     // --- CUSTOM TOAST NOTIFICATION ---
@@ -480,24 +757,25 @@
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
       
-      const colors = type === 'success' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200';
+      const colors = type === 'success' 
+        ? 'bg-slate-800/90 border-emerald-500/30 text-emerald-400 shadow-[0_4px_20px_-4px_rgba(16,185,129,0.2)]' 
+        : 'bg-slate-800/90 border-rose-500/30 text-rose-400 shadow-[0_4px_20px_-4px_rgba(244,63,94,0.2)]';
       const icon = type === 'success' ? 'check-circle' : 'alert-circle';
 
-      toast.className = `toast-enter flex items-center gap-2 px-4 py-3 rounded-xl border shadow-lg ${colors}`;
-      toast.innerHTML = `<i data-lucide="${icon}" class="w-5 h-5"></i> <span class="text-sm font-medium">${message}</span>`;
+      toast.className = `toast-enter flex items-center gap-3 px-5 py-3.5 rounded-2xl border backdrop-blur-md ${colors}`;
+      toast.innerHTML = `<i data-lucide="${icon}" class="w-5 h-5"></i> <span class="text-sm font-semibold">${message}</span>`;
       
       container.appendChild(toast);
       lucide.createIcons();
 
       setTimeout(() => {
         toast.classList.replace('toast-enter', 'toast-exit');
-        setTimeout(() => toast.remove(), 300);
+        setTimeout(() => toast.remove(), 400);
       }, 3000);
     }
 
     // --- CORE LOGIC & ROUTING ---
-
-    function switchView(viewName) {
+    window.switchView = function(viewName) {
       const user = getCurrentUser();
       
       document.getElementById('viewLogin').classList.add('hidden');
@@ -513,7 +791,12 @@
 
       document.getElementById('mainHeader').classList.remove('hidden');
       document.getElementById('mainFooter').classList.remove('hidden');
-      document.getElementById('userWelcomeText').innerText = `Welcome, ${user.username} (${user.role})`;
+      
+      document.getElementById('userWelcomeText').innerText = `${user.username}`;
+      const portalName = user.portalName || 'AccessPortal';
+      document.getElementById('headerPortalName').innerText = portalName;
+      document.title = portalName;
+      document.getElementById('footerYear').innerText = `© ${new Date().getFullYear()} ${portalName}. Connected to Firebase.`;
 
       const btnSettings = document.getElementById('btnNavSettings');
       const btnPortal = document.getElementById('btnNavPortal');
@@ -523,58 +806,70 @@
         document.getElementById('viewPortal').classList.remove('hidden');
         btnPortal.classList.add('hidden');
         searchContainer.classList.remove('hidden');
-        if (user.role === 'admin') btnSettings.classList.remove('hidden');
-        renderPortal(); // Re-render active tab
-      } else if (viewName === 'settings' && user.role === 'admin') {
+        btnSettings.classList.remove('hidden');
+        renderPortal(); 
+      } else if (viewName === 'settings') {
         document.getElementById('viewSettings').classList.remove('hidden');
         btnSettings.classList.add('hidden');
         searchContainer.classList.add('hidden');
         btnPortal.classList.remove('hidden');
+        
+        if(user.role !== 'admin') {
+           document.getElementById('tabBtnUsers').style.display = 'none';
+           window.switchSettingsTab('links'); 
+        } else {
+           document.getElementById('tabBtnUsers').style.display = 'flex';
+        }
+
         renderAdminLinks();
-        renderAdminUsers();
+        if(user.role === 'admin') renderAdminUsers();
       } else {
-        switchView('portal');
+        window.switchView('portal');
       }
       lucide.createIcons();
-    }
+    };
 
-    function handleLogin(e) {
+    window.handleLogin = function(e) {
       e.preventDefault();
       const u = document.getElementById('loginUsername').value.trim();
       const p = document.getElementById('loginPassword').value.trim();
       
-      const users = getUsers();
-      const user = users.find(usr => usr.username === u && usr.password === p);
+      // Look up against real-time globalUsers from Firebase
+      const user = globalUsers.find(usr => usr.username === u && usr.password === p);
 
       if (user) {
-        setCurrentUser({ id: user.id, username: user.username, role: user.role });
+        setCurrentUser({ id: user.id, username: user.username, role: user.role, portalName: user.portalName });
         document.getElementById('loginForm').reset();
-        showToast('Login successful!');
-        switchView('portal');
-      } else {
-        showToast('Invalid Username or Password.', 'error');
-      }
-    }
+        
+        document.getElementById('loginPassword').type = 'password';
+        document.getElementById('loginEyeIcon').setAttribute('data-lucide', 'eye');
 
-    function logout() {
+        showToast('Connected to Workspace');
+        // Establish connection to their specific portal data block
+        setupPortalDataListener(user.id);
+        window.switchView('portal');
+      } else {
+        showToast('Invalid credentials provided.', 'error');
+      }
+    };
+
+    window.logout = function() {
+      if(unsubPortalData) unsubPortalData(); // Disconnect listener to save bandwidth
       setCurrentUser(null);
-      switchView('login');
-    }
+      window.switchView('login');
+    };
 
     // --- PORTAL VIEW RENDERING (WITH TABS) ---
-    
     let activePortalTab = 'webapp';
-    const searchInput = document.getElementById('searchInput');
-    const portalContent = document.getElementById('portalContent');
-
-    function switchPortalTab(tabType) {
+    
+    window.switchPortalTab = function(tabType) {
       activePortalTab = tabType;
       
       const appBtn = document.getElementById('tabAppBtn');
       const docBtn = document.getElementById('tabDocBtn');
       
-      const activeClass = "flex items-center gap-2 px-5 py-3 border-b-2 font-medium text-sm transition-colors border-blue-600 text-blue-600";
-      const inactiveClass = "flex items-center gap-2 px-5 py-3 border-b-2 font-medium text-sm transition-colors border-transparent text-slate-500 hover:text-slate-700";
+      const activeClass = "flex items-center gap-2 px-6 py-3 border-b-2 font-bold text-sm transition-all border-indigo-400 text-indigo-400";
+      const inactiveClass = "flex items-center gap-2 px-6 py-3 border-b-2 border-transparent font-medium text-sm transition-all text-slate-400 hover:text-slate-200 hover:border-slate-600";
 
       if (tabType === 'webapp') {
         appBtn.className = activeClass;
@@ -584,16 +879,14 @@
         appBtn.className = inactiveClass;
       }
       
-      // Clear search when switching tabs (optional, but good UX)
-      searchInput.value = '';
+      document.getElementById('searchInput').value = '';
       renderPortal();
-    }
+    };
 
     function renderPortal(query = "") {
-      const data = getPortalData();
+      const data = globalPortalData; // Feed from real-time global state
       const lowerQuery = query.toLowerCase();
 
-      // Filter by active tab AND search query
       const filteredData = data.filter(section => section.type === activePortalTab).map(section => {
         const filteredItems = section.items.filter(item => 
           item.title.toLowerCase().includes(lowerQuery) || 
@@ -602,44 +895,47 @@
         return { ...section, items: filteredItems };
       }).filter(section => section.items.length > 0);
 
-      // Render HTML
+      const portalContent = document.getElementById('portalContent');
+
       if (filteredData.length === 0) {
         portalContent.innerHTML = `
-          <div class="text-center py-20">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
-              <i data-lucide="search" class="h-8 w-8 text-slate-400"></i>
+          <div class="text-center py-20 animate-in">
+            <div class="inline-flex w-20 h-20 rounded-full bg-white/5 border border-white/10 items-center justify-center mb-5 shadow-sm">
+              <i data-lucide="search-x" class="h-8 w-8 text-slate-500"></i>
             </div>
-            <h3 class="text-lg font-medium text-slate-900">No results found</h3>
-            <p class="mt-1 text-slate-500">Try searching with different keywords in this tab.</p>
+            <h3 class="text-xl font-bold text-slate-200">No matches found</h3>
+            <p class="mt-2 text-slate-400 text-sm">We couldn't find anything matching your search.</p>
           </div>
         `;
       } else {
         portalContent.innerHTML = filteredData.map((section, idx) => `
           <section class="animate-in" style="animation-delay: ${idx * 100}ms;">
-            <div class="flex items-center gap-2 mb-6 border-b border-slate-200 pb-2">
-              <div class="text-slate-500">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="p-2 rounded-xl bg-white/5 border border-white/10 shadow-sm text-indigo-400">
                 <i data-lucide="${section.icon}" class="w-5 h-5"></i>
               </div>
-              <h2 class="text-xl font-semibold text-slate-800">${section.category}</h2>
-              <span class="ml-auto bg-slate-200 text-slate-600 py-0.5 px-2.5 rounded-full text-xs font-medium">${section.items.length}</span>
+              <h2 class="text-2xl font-bold text-white">${section.category}</h2>
+              <span class="ml-3 bg-indigo-500/10 text-indigo-400 py-1 px-3 rounded-full text-xs font-bold border border-indigo-500/20">${section.items.length}</span>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               ${section.items.map(item => {
                 const target = item.url.startsWith('http') ? "_blank" : "_self";
-                const bg = item.bg || 'bg-slate-100';
-                const col = item.color || 'text-slate-600';
+                const bg = item.bg || 'bg-slate-800/50';
+                const col = item.color || 'text-slate-300';
                 const ico = item.icon || 'link';
                 return `
-                  <a href="${item.url}" target="${target}" rel="noreferrer" class="group relative flex flex-col bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    <div class="flex justify-between items-start mb-4">
-                      <div class="p-3 rounded-xl ${bg} ${col} group-hover:scale-110 transition-transform duration-200">
+                  <a href="${item.url}" target="${target}" rel="noreferrer" class="glass-card rounded-3xl p-6 group relative flex flex-col focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[#0f172a]">
+                    <div class="flex justify-between items-start mb-5">
+                      <div class="p-3.5 rounded-2xl ${bg} ${col} shadow-sm border border-white/5 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
                         <i data-lucide="${ico}" class="w-6 h-6"></i>
                       </div>
-                      <i data-lucide="external-link" class="w-5 h-5 text-slate-300 group-hover:text-blue-500 transition-colors"></i>
+                      <div class="bg-white/10 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <i data-lucide="arrow-up-right" class="w-4 h-4 text-slate-300"></i>
+                      </div>
                     </div>
-                    <h3 class="text-lg font-semibold text-slate-900 group-hover:text-blue-700 transition-colors mb-2 line-clamp-1">${item.title}</h3>
-                    <p class="text-sm text-slate-500 line-clamp-2 mt-auto">${item.description}</p>
+                    <h3 class="text-lg font-bold text-slate-200 group-hover:text-indigo-400 transition-colors mb-2 line-clamp-1">${item.title}</h3>
+                    <p class="text-sm text-slate-400 line-clamp-2 mt-auto leading-relaxed">${item.description}</p>
                   </a>
                 `;
               }).join('')}
@@ -650,60 +946,61 @@
       lucide.createIcons();
     }
 
-    searchInput.addEventListener('input', (e) => renderPortal(e.target.value));
-
+    document.getElementById('searchInput').addEventListener('input', (e) => renderPortal(e.target.value));
 
     // --- SETTINGS / ADMIN PANEL LOGIC ---
-
-    function switchSettingsTab(tab) {
+    window.switchSettingsTab = function(tab) {
       const btnLinks = document.getElementById('tabBtnLinks');
       const btnUsers = document.getElementById('tabBtnUsers');
       
+      const activeClass = "flex items-center gap-3 px-4 py-3.5 rounded-2xl text-left font-bold transition-all bg-white/10 shadow-sm text-indigo-400 translate-x-1";
+      const inactiveClass = "flex items-center gap-3 px-4 py-3.5 rounded-2xl text-left font-medium transition-all text-slate-400 hover:bg-white/5 hover:text-slate-200";
+
       if(tab === 'links') {
-        btnLinks.className = "flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-colors bg-blue-50 text-blue-700";
-        btnUsers.className = "flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-colors text-slate-600 hover:bg-slate-100 hover:text-slate-900";
+        btnLinks.className = activeClass;
+        btnUsers.className = inactiveClass;
         document.getElementById('tabContentLinks').classList.remove('hidden');
         document.getElementById('tabContentUsers').classList.add('hidden');
       } else {
-        btnUsers.className = "flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-colors bg-blue-50 text-blue-700";
-        btnLinks.className = "flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-colors text-slate-600 hover:bg-slate-100 hover:text-slate-900";
+        btnUsers.className = activeClass;
+        btnLinks.className = inactiveClass;
         document.getElementById('tabContentUsers').classList.remove('hidden');
         document.getElementById('tabContentLinks').classList.add('hidden');
       }
-    }
+    };
 
     function renderAdminLinks() {
-      const data = getPortalData();
+      const data = globalPortalData;
       const container = document.getElementById('adminCategoriesList');
       
       container.innerHTML = data.map(cat => `
-        <div class="border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
-          <div class="bg-white border-b border-slate-200 px-5 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3 font-semibold text-slate-800">
-              <div class="p-1.5 bg-slate-100 rounded-lg">
-                <i data-lucide="${cat.icon}" class="w-5 h-5 text-slate-500"></i>
+        <div class="border border-white/10 bg-white/5 rounded-3xl overflow-hidden shadow-sm">
+          <div class="bg-white/5 px-6 py-5 flex justify-between items-center border-b border-white/5">
+            <div class="flex items-center gap-4 font-semibold text-white">
+              <div class="p-2 bg-white/10 rounded-xl shadow-sm border border-white/5 text-indigo-400">
+                <i data-lucide="${cat.icon}" class="w-5 h-5"></i>
               </div>
               <div>
-                ${cat.category}
-                <span class="block text-xs font-normal text-slate-400 mt-0.5">${cat.type === 'webapp' ? 'Tab: Web Applications' : 'Tab: Documents'}</span>
+                <div class="text-lg">${cat.category}</div>
+                <div class="text-[11px] uppercase tracking-wider text-slate-400 font-medium mt-0.5">${cat.type === 'webapp' ? 'Web Application' : 'Document'}</div>
               </div>
             </div>
             <div class="flex gap-2">
-              <button onclick="openLinkModal('${cat.id}')" class="text-sm text-blue-600 hover:text-blue-800 font-medium px-2 py-1 rounded hover:bg-blue-50 transition-colors">+ Add Link</button>
-              <button onclick="deleteCategory('${cat.id}')" class="text-sm text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors" title="Delete Category"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+              <button onclick="openLinkModal('${cat.id}')" class="text-sm text-indigo-300 hover:text-white font-bold px-4 py-2 rounded-full bg-white/10 hover:bg-indigo-600 shadow-sm transition-all border border-white/5">+ Add Module</button>
+              <button onclick="deleteCategory('${cat.id}')" class="text-rose-400 hover:text-white p-2 rounded-full bg-white/5 hover:bg-rose-500 shadow-sm transition-all border border-white/5" title="Delete Category"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </div>
           </div>
-          <div class="p-4 space-y-2">
-            ${cat.items.length === 0 ? `<p class="text-sm text-slate-500 italic">No links here yet. Add one above.</p>` : ''}
+          <div class="p-5 space-y-3">
+            ${cat.items.length === 0 ? `<div class="text-center py-6 text-sm text-slate-500 bg-white/5 rounded-2xl border border-dashed border-slate-700">No modules yet. Add one above.</div>` : ''}
             ${cat.items.map(item => `
-              <div class="flex justify-between items-center bg-white p-3 border border-slate-100 rounded-lg shadow-sm">
+              <div class="flex justify-between items-center bg-white/5 p-4 border border-white/5 rounded-2xl shadow-sm group hover:bg-white/10 transition-colors">
                 <div>
-                  <p class="font-medium text-slate-800 text-sm flex items-center gap-2">
-                    <i data-lucide="${item.icon || 'link'}" class="w-4 h-4 text-slate-400"></i> ${item.title}
+                  <p class="font-bold text-slate-200 text-sm flex items-center gap-2">
+                    <i data-lucide="${item.icon || 'link'}" class="w-4.5 h-4.5 text-indigo-400"></i> ${item.title}
                   </p>
-                  <a href="${item.url}" target="_blank" class="text-xs text-blue-500 hover:underline truncate max-w-xs inline-block mt-0.5">${item.url}</a>
+                  <a href="${item.url}" target="_blank" class="text-xs text-slate-400 hover:text-indigo-400 hover:underline truncate max-w-sm inline-block mt-1">${item.url}</a>
                 </div>
-                <button onclick="deleteLink('${cat.id}', '${item.id}')" class="text-slate-400 hover:text-red-500 transition-colors p-2"><i data-lucide="x" class="w-4 h-4"></i></button>
+                <button onclick="deleteLink('${cat.id}', '${item.id}')" class="text-slate-500 hover:text-rose-400 bg-white/5 hover:bg-rose-500/20 border border-white/5 p-2 rounded-full shadow-sm transition-all"><i data-lucide="x" class="w-4 h-4"></i></button>
               </div>
             `).join('')}
           </div>
@@ -713,24 +1010,28 @@
     }
 
     function renderAdminUsers() {
-      const users = getUsers();
+      const users = globalUsers;
       const tbody = document.getElementById('adminUsersList');
-      const currentUser = getCurrentUser();
+      const currentUser = getCurrentUser() || {};
 
       tbody.innerHTML = users.map(u => `
-        <tr class="hover:bg-slate-50">
-          <td class="px-4 py-3 font-medium text-slate-900">${u.username} ${u.id === currentUser.id ? '<span class="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded ml-2">You</span>' : ''}</td>
-          <td class="px-4 py-3">
-            <span class="text-xs font-semibold px-2 py-1 rounded-full ${u.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-700'}">
-              ${u.role.toUpperCase()}
+        <tr class="hover:bg-white/5 transition-colors">
+          <td class="px-5 py-4 font-bold text-slate-200">${u.username} ${u.id === currentUser.id ? '<span class="text-[10px] uppercase font-bold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded-full ml-2">You</span>' : ''}</td>
+          <td class="px-5 py-4">
+            <span class="text-xs font-bold px-2.5 py-1 rounded-full border ${u.role === 'admin' ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' : 'bg-slate-800 text-slate-400 border-slate-700'}">
+              ${u.role}
             </span>
           </td>
-          <td class="px-4 py-3 text-right">
+          <td class="px-5 py-4 truncate max-w-[150px] text-slate-400 font-medium" title="${u.portalName || 'AccessPortal'}">${u.portalName || 'AccessPortal'}</td>
+          <td class="px-5 py-4 text-right">
+            <button onclick="editUser('${u.id}')" class="text-slate-400 hover:text-indigo-400 bg-white/5 hover:bg-indigo-500/20 border border-white/5 transition-all p-2 rounded-full shadow-sm" title="Edit User">
+              <i data-lucide="edit-2" class="w-4 h-4"></i>
+            </button>
             ${u.id !== currentUser.id ? `
-              <button onclick="deleteUser('${u.id}')" class="text-slate-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50" title="Delete User">
+              <button onclick="deleteUser('${u.id}')" class="text-slate-400 hover:text-rose-400 bg-white/5 hover:bg-rose-500/20 border border-white/5 transition-all p-2 rounded-full shadow-sm ml-1" title="Delete User">
                 <i data-lucide="trash-2" class="w-4 h-4"></i>
               </button>
-            ` : '<span class="text-xs text-slate-400 italic">Cannot delete self</span>'}
+            ` : '<span class="inline-block w-8"></span>'}
           </td>
         </tr>
       `).join('');
@@ -738,49 +1039,87 @@
     }
 
     // CRUD: Users
-    function handleAddUser(e) {
+    window.handleAddUser = function(e) {
       e.preventDefault();
       const uName = document.getElementById('newUsername').value.trim();
       const pWord = document.getElementById('newPassword').value.trim();
       const role = document.getElementById('newRole').value;
+      const portalName = document.getElementById('newPortalName').value.trim() || 'AccessPortal';
 
       if (!uName || !pWord) return;
 
-      const users = getUsers();
-      if(users.some(u => u.username === uName)) {
-        showToast('Username already exists.', 'error');
+      if(globalUsers.some(u => u.username === uName)) {
+        showToast('Username already taken.', 'error');
         return;
       }
 
-      confirmAction('Add New User', `Are you sure you want to create the user "${uName}"?`, 'bg-blue-600 hover:bg-blue-700', () => {
-        users.push({ id: 'u' + Date.now(), username: uName, password: pWord, role: role });
-        setUsers(users);
-        showToast('User added successfully.');
+      confirmAction('Enroll User', `Add ${uName} to the directory?`, 'bg-indigo-600 hover:bg-indigo-500', () => {
+        const users = [...globalUsers];
+        users.push({ id: 'u' + Date.now(), username: uName, password: pWord, role: role, portalName: portalName });
+        setUsers(users); // Updates Firebase
         e.target.reset();
-        renderAdminUsers();
       });
-    }
+    };
 
-    function deleteUser(id) {
-      confirmAction('Delete User', 'Are you sure you want to delete this user? This action cannot be undone.', 'bg-red-600 hover:bg-red-700', () => {
-        let users = getUsers();
-        users = users.filter(u => u.id !== id);
-        setUsers(users);
-        showToast('User deleted.');
-        renderAdminUsers();
+    window.editUser = function(id) {
+      const user = globalUsers.find(u => u.id === id);
+      if(!user) return;
+      
+      document.getElementById('editUserId').value = user.id;
+      document.getElementById('editUsername').value = user.username;
+      document.getElementById('editPassword').value = user.password;
+      document.getElementById('editRole').value = user.role;
+      document.getElementById('editPortalName').value = user.portalName || 'AccessPortal';
+      
+      window.showModal('editUserModal');
+    };
+
+    window.handleEditUser = function(e) {
+      e.preventDefault();
+      const id = document.getElementById('editUserId').value;
+      const pwd = document.getElementById('editPassword').value.trim();
+      const role = document.getElementById('editRole').value;
+      const portalName = document.getElementById('editPortalName').value.trim() || 'AccessPortal';
+
+      confirmAction('Save Changes', 'Update these credentials?', 'bg-indigo-600 hover:bg-indigo-500', () => {
+        let users = [...globalUsers];
+        const index = users.findIndex(u => u.id === id);
+        if (index > -1) {
+          users[index].password = pwd;
+          users[index].role = role;
+          users[index].portalName = portalName;
+          setUsers(users); // Updates Firebase
+          
+          const currentUser = getCurrentUser();
+          if (currentUser && currentUser.id === id) {
+             setCurrentUser({ ...currentUser, role: role, portalName: portalName });
+             document.getElementById('headerPortalName').innerText = portalName;
+             document.title = portalName;
+             document.getElementById('footerYear').innerText = `© ${new Date().getFullYear()} ${portalName}. Connected to Firebase.`;
+          }
+          window.hideModal();
+        }
       });
-    }
+    };
+
+    window.deleteUser = function(id) {
+      confirmAction('Remove User', 'This action is permanent. Proceed?', 'bg-rose-600 hover:bg-rose-500', () => {
+        let users = [...globalUsers];
+        users = users.filter(u => u.id !== id);
+        setUsers(users); // Updates Firebase
+      });
+    };
 
     // CRUD: Categories & Links
-    function handleAddCategory(e) {
+    window.handleAddCategory = function(e) {
       e.preventDefault();
       const name = document.getElementById('catName').value.trim();
       const type = document.getElementById('catType').value;
       let icon = document.getElementById('catIconInput').value.trim();
       if(!icon) icon = 'folder';
 
-      confirmAction('Create Category', `Are you sure you want to create the category "${name}"?`, 'bg-blue-600 hover:bg-blue-700', () => {
-        const data = getPortalData();
+      confirmAction('Create Section', `Create the ${name} section?`, 'bg-indigo-600 hover:bg-indigo-500', () => {
+        const data = [...globalPortalData];
         data.push({
           id: 'c' + Date.now(),
           type: type,
@@ -788,24 +1127,20 @@
           icon: icon,
           items: []
         });
-        setPortalData(data);
-        hideModal();
-        showToast('Category created successfully.');
-        renderAdminLinks();
+        setPortalData(data); // Updates Firebase
+        window.hideModal();
       });
-    }
+    };
 
-    function deleteCategory(id) {
-      confirmAction('Delete Category', 'Are you sure you want to delete this entire category and all its links?', 'bg-red-600 hover:bg-red-700', () => {
-        let data = getPortalData();
+    window.deleteCategory = function(id) {
+      confirmAction('Delete Section', 'This removes the section and all its contents. Proceed?', 'bg-rose-600 hover:bg-rose-500', () => {
+        let data = [...globalPortalData];
         data = data.filter(c => c.id !== id);
-        setPortalData(data);
-        showToast('Category deleted.');
-        renderAdminLinks();
+        setPortalData(data); // Updates Firebase
       });
-    }
+    };
 
-    function handleAddLink(e) {
+    window.handleAddLink = function(e) {
       e.preventDefault();
       const catId = document.getElementById('linkCategoryId').value;
       const title = document.getElementById('linkTitle').value.trim();
@@ -814,19 +1149,21 @@
       let icon = document.getElementById('linkIconInput').value.trim();
       if(!icon) icon = 'link-2';
 
-      confirmAction('Add Link', `Are you sure you want to add the link "${title}"?`, 'bg-blue-600 hover:bg-blue-700', () => {
-        let data = getPortalData();
+      confirmAction('Add Module', `Deploy ${title} to the workspace?`, 'bg-indigo-600 hover:bg-indigo-500', () => {
+        let data = [...globalPortalData];
         const catIndex = data.findIndex(c => c.id === catId);
         
         if(catIndex > -1) {
-          const colors = [
-            {c: 'text-blue-600', b: 'bg-blue-100'},
-            {c: 'text-indigo-600', b: 'bg-indigo-100'},
-            {c: 'text-emerald-600', b: 'bg-emerald-100'},
-            {c: 'text-pink-600', b: 'bg-pink-100'},
-            {c: 'text-amber-600', b: 'bg-amber-100'}
+          const vividlyDark = [
+            {c: 'text-blue-400', b: 'bg-blue-500/20'},
+            {c: 'text-indigo-400', b: 'bg-indigo-500/20'},
+            {c: 'text-emerald-400', b: 'bg-emerald-500/20'},
+            {c: 'text-rose-400', b: 'bg-rose-500/20'},
+            {c: 'text-amber-400', b: 'bg-amber-500/20'},
+            {c: 'text-purple-400', b: 'bg-purple-500/20'},
+            {c: 'text-cyan-400', b: 'bg-cyan-500/20'}
           ];
-          const randomStyle = colors[Math.floor(Math.random() * colors.length)];
+          const randomStyle = vividlyDark[Math.floor(Math.random() * vividlyDark.length)];
 
           data[catIndex].items.push({
             id: 'l' + Date.now(),
@@ -837,61 +1174,51 @@
             color: randomStyle.c,
             bg: randomStyle.b
           });
-          setPortalData(data);
-          hideModal();
-          showToast('Link added to portal.');
-          renderAdminLinks();
-          // If we are currently in portal view, refresh it just in case
-          if (!document.getElementById('viewPortal').classList.contains('hidden')) {
-             renderPortal(document.getElementById('searchInput').value);
-          }
+          setPortalData(data); // Updates Firebase
+          window.hideModal();
         }
       });
-    }
+    };
 
-    function deleteLink(catId, linkId) {
-      confirmAction('Delete Link', 'Are you sure you want to remove this link?', 'bg-red-600 hover:bg-red-700', () => {
-        let data = getPortalData();
+    window.deleteLink = function(catId, linkId) {
+      confirmAction('Remove Module', 'Are you sure you want to remove this module?', 'bg-rose-600 hover:bg-rose-500', () => {
+        let data = [...globalPortalData];
         const catIndex = data.findIndex(c => c.id === catId);
         if(catIndex > -1) {
           data[catIndex].items = data[catIndex].items.filter(i => i.id !== linkId);
-          setPortalData(data);
-          showToast('Link deleted.');
-          renderAdminLinks();
+          setPortalData(data); // Updates Firebase
         }
       });
-    }
+    };
 
     // --- MODAL CONTROLS ---
-    function showModal(modalId) {
+    window.showModal = function(modalId) {
       document.getElementById('modalOverlay').classList.remove('hidden');
       document.getElementById('categoryModal').classList.add('hidden');
       document.getElementById('linkModal').classList.add('hidden');
+      document.getElementById('editUserModal').classList.add('hidden');
       document.getElementById(modalId).classList.remove('hidden');
       
-      // Reset icon selection on open
       if(modalId === 'categoryModal') {
-        selectIcon('catIconInput', 'folder');
+        window.selectIcon('catIconInput', 'folder');
       } else if (modalId === 'linkModal') {
-        selectIcon('linkIconInput', 'link-2');
+        window.selectIcon('linkIconInput', 'link-2');
       }
-    }
+    };
 
-    function hideModal() {
+    window.hideModal = function() {
       document.getElementById('modalOverlay').classList.add('hidden');
       document.querySelectorAll('#modalOverlay form').forEach(f => f.reset());
-    }
+    };
 
-    function openLinkModal(categoryId) {
+    window.openLinkModal = function(categoryId) {
       document.getElementById('linkCategoryId').value = categoryId;
-      showModal('linkModal');
-    }
+      window.showModal('linkModal');
+    };
 
-    // Initial Load Setup
+    // Initialization
     document.addEventListener("DOMContentLoaded", () => {
-      initData();
       renderIconGrids();
-      switchView('login');
       lucide.createIcons();
     });
 
