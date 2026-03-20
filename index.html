@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Company Portal</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    
+    @keyframes slideInFromBottom {
+      from { opacity: 0; transform: translateY(1rem); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-in {
+      animation: slideInFromBottom 0.4s ease-out forwards;
+      opacity: 0;
+    }
+    
+    /* Custom Toast Notification Animations */
+    @keyframes toastSlideIn {
+      from { opacity: 0; transform: translateX(100%); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes toastFadeOut {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(100%); }
+    }
+    .toast-enter { animation: toastSlideIn 0.3s ease-out forwards; }
+    .toast-exit { animation: toastFadeOut 0.3s ease-out forwards; }
+    
+    /* Custom Scrollbar for Icon Grid */
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 8px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900 selection:bg-blue-200 flex flex-col">
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div>
+
+  <!-- Header Section -->
+  <header id="mainHeader" class="bg-white border-b border-slate-200 sticky top-0 z-40 hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        
+        <!-- Logo & Title -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+            <i data-lucide="layout" class="w-6 h-6 text-white"></i>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold tracking-tight text-slate-900">Company Portal</h1>
+            <p class="text-xs text-slate-500 font-medium flex items-center gap-2 mt-0.5">
+              <span id="userWelcomeText">Welcome!</span>
+              <span class="text-slate-300">|</span>
+              <i data-lucide="clock" class="w-3 h-3 text-slate-400"></i>
+              <span id="phTimestamp" class="text-slate-600">Loading time...</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Header Buttons -->
+        <div class="flex items-center gap-3">
+          <!-- Search Bar -->
+          <div id="searchContainer" class="relative w-full md:w-64 lg:w-80">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i data-lucide="search" class="h-4 w-4 text-slate-400"></i>
+            </div>
+            <input
+              type="text"
+              id="searchInput"
+              class="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm"
+              placeholder="Search apps, documents..."
+            />
+          </div>
+          
+          <!-- Admin Settings Button -->
+          <button id="btnNavSettings" onclick="switchView('settings')" class="hidden flex items-center justify-center gap-2 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium transition-colors">
+            <i data-lucide="settings" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Admin Panel</span>
+          </button>
+
+          <!-- Back to Portal Button -->
+          <button id="btnNavPortal" onclick="switchView('portal')" class="hidden flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-medium transition-colors">
+            <i data-lucide="layout-grid" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Portal</span>
+          </button>
+
+          <!-- Logout Button -->
+          <button onclick="logout()" class="flex items-center justify-center gap-2 px-3 py-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium transition-colors">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Logout</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- VIEWS / PAGES -->
+
+  <!-- 1. LOGIN VIEW -->
+  <main id="viewLogin" class="flex-grow flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-8 w-full max-w-md animate-in">
+      <div class="text-center mb-8">
+        <div class="inline-flex w-14 h-14 bg-blue-600 rounded-2xl items-center justify-center shadow-md mb-4">
+          <i data-lucide="layout" class="w-8 h-8 text-white"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-900">Login to Portal</h2>
+        <p class="text-slate-500 text-sm mt-2">Enter your credentials to access.</p>
+      </div>
+      
+      <form id="loginForm" class="space-y-5" onsubmit="handleLogin(event)">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Username</label>
+          <input type="text" id="loginUsername" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+          <input type="password" id="loginPassword" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+        </div>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition-colors flex justify-center items-center gap-2">
+          Sign In <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <!-- 2. PORTAL VIEW (Main Dashboard) -->
+  <main id="viewPortal" class="hidden flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Navigation Tabs for Separating Web Apps and Documents -->
+    <div class="flex gap-2 border-b border-slate-200 mb-8">
+      <button onclick="switchPortalTab('webapp')" id="tabAppBtn" class="flex items-center gap-2 px-5 py-3 border-b-2 font-medium text-sm transition-colors border-blue-600 text-blue-600">
+        <i data-lucide="layout" class="w-4 h-4"></i> Web Applications
+      </button>
+      <button onclick="switchPortalTab('document')" id="tabDocBtn" class="flex items-center gap-2 px-5 py-3 border-b-2 font-medium text-sm transition-colors border-transparent text-slate-500 hover:text-slate-700">
+        <i data-lucide="folder-open" class="w-4 h-4"></i> Documents
+      </button>
+    </div>
+
+    <div id="portalContent" class="space-y-12">
+      <!-- JavaScript will inject Categories and Links here based on the selected tab -->
+    </div>
+  </main>
+
+  <!-- 3. SETTINGS / ADMIN PANEL VIEW -->
+  <main id="viewSettings" class="hidden flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex flex-col md:flex-row gap-8">
+      
+      <!-- Settings Sidebar -->
+      <aside class="w-full md:w-64 shrink-0">
+        <h2 class="text-xl font-bold text-slate-800 mb-6">Admin Panel</h2>
+        <nav class="flex flex-col gap-2">
+          <button onclick="switchSettingsTab('links')" id="tabBtnLinks" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-colors bg-blue-50 text-blue-700">
+            <i data-lucide="layers" class="w-5 h-5"></i>
+            Manage Links
+          </button>
+          <button onclick="switchSettingsTab('users')" id="tabBtnUsers" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-colors text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+            <i data-lucide="users" class="w-5 h-5"></i>
+            User Accounts
+          </button>
+        </nav>
+      </aside>
+
+      <!-- Settings Content Area -->
+      <div class="flex-grow bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 min-h-[500px]">
+        
+        <!-- TAB: LINKS & CATEGORIES -->
+        <div id="tabContentLinks" class="block animate-in">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">Categories & Links</h3>
+              <p class="text-sm text-slate-500">Add or remove apps and documents from the portal.</p>
+            </div>
+            <button onclick="showModal('categoryModal')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors">
+              <i data-lucide="plus" class="w-4 h-4"></i> Category
+            </button>
+          </div>
+          
+          <div id="adminCategoriesList" class="space-y-6">
+            <!-- JS renders categories here -->
+          </div>
+        </div>
+
+        <!-- TAB: USERS -->
+        <div id="tabContentUsers" class="hidden animate-in">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">User Accounts</h3>
+              <p class="text-sm text-slate-500">Manage users who can access the portal.</p>
+            </div>
+          </div>
+
+          <!-- Add User Form -->
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 mb-8">
+            <h4 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+              <i data-lucide="user-plus" class="w-4 h-4 text-blue-600"></i> Add User
+            </h4>
+            <form onsubmit="handleAddUser(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Username</label>
+                <input type="text" id="newUsername" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Password</label>
+                <input type="password" id="newPassword" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Role</label>
+                <select id="newRole" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <div>
+                <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2 rounded-lg text-sm transition-colors">
+                  Add User
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- User List -->
+          <div class="border border-slate-200 rounded-xl overflow-hidden">
+            <table class="w-full text-left text-sm text-slate-600">
+              <thead class="bg-slate-50 border-b border-slate-200 text-slate-800">
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Username</th>
+                  <th class="px-4 py-3 font-semibold">Role</th>
+                  <th class="px-4 py-3 font-semibold text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="adminUsersList" class="divide-y divide-slate-100 bg-white">
+                <!-- JS renders user list here -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer id="mainFooter" class="border-t border-slate-200 bg-white mt-auto py-6">
+    <div class="max-w-7xl mx-auto px-4 text-center text-sm text-slate-500 flex flex-col items-center justify-center">
+      <i data-lucide="layout" class="w-5 h-5 text-slate-300 mb-2"></i>
+      <p id="footerYear">© Company Portal.</p>
+    </div>
+  </footer>
+
+  <!-- CUSTOM MODALS FOR SETTINGS -->
+  
+  <!-- Overlay -->
+  <div id="modalOverlay" class="hidden fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center p-4">
+    
+    <!-- Modal: Add Category -->
+    <div id="categoryModal" class="hidden bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+      <h3 class="text-lg font-bold mb-4">New Category</h3>
+      <form onsubmit="handleAddCategory(event)" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Category Type</label>
+          <select id="catType" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-500 bg-white">
+            <option value="webapp">Web Application</option>
+            <option value="document">Document</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Category Name</label>
+          <input type="text" id="catName" required placeholder="E.g., Internal Tools" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-2">Select Icon</label>
+          <input type="hidden" id="catIconInput" required>
+          <div class="grid grid-cols-6 gap-2 max-h-40 overflow-y-auto p-1 custom-scrollbar" id="catIconGrid">
+            <!-- JS renders icons here -->
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 mt-6">
+          <button type="button" onclick="hideModal()" class="px-4 py-2 text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors">Save</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal: Add Link -->
+    <div id="linkModal" class="hidden bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+      <h3 class="text-lg font-bold mb-4">Add Link</h3>
+      <form onsubmit="handleAddLink(event)" class="space-y-4">
+        <input type="hidden" id="linkCategoryId">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Title</label>
+          <input type="text" id="linkTitle" required class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">URL (Link)</label>
+          <input type="text" id="linkUrl" required placeholder="https://..." class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-2">Select Icon</label>
+          <input type="hidden" id="linkIconInput" required>
+          <div class="grid grid-cols-6 gap-2 max-h-32 overflow-y-auto p-1 custom-scrollbar" id="linkIconGrid">
+            <!-- JS renders icons here -->
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
+          <textarea id="linkDesc" rows="2" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-500"></textarea>
+        </div>
+        <div class="flex justify-end gap-2 mt-6">
+          <button type="button" onclick="hideModal()" class="px-4 py-2 text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors">Save Link</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Modal: Confirmation Warning -->
+  <div id="confirmModal" class="hidden fixed inset-0 bg-slate-900/60 z-[60] flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-in">
+      <div class="flex items-center gap-3 text-amber-500 mb-4">
+        <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+        <h3 class="text-lg font-bold text-slate-900" id="confirmTitle">Confirm Action</h3>
+      </div>
+      <p id="confirmMessage" class="text-slate-600 mb-6 text-sm">Are you sure you want to proceed?</p>
+      <div class="flex justify-end gap-2">
+        <button onclick="closeConfirmModal()" class="px-4 py-2 text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg font-medium transition-colors text-sm">Cancel</button>
+        <button id="confirmBtn" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors text-sm">Yes, Proceed</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Set Footer Year
+    document.getElementById('footerYear').innerText = `© ${new Date().getFullYear()} Company Portal. All rights reserved.`;
+
+    // --- PHILIPPINE TIMEZONE CLOCK ---
+    function updatePhTime() {
+      const now = new Date();
+      // Format to Philippine Time
+      const options = { 
+        timeZone: 'Asia/Manila', 
+        weekday: 'short', 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit' 
+      };
+      const phTimeString = now.toLocaleString('en-PH', options);
+      
+      const timeElement = document.getElementById('phTimestamp');
+      if(timeElement) {
+        timeElement.innerText = phTimeString + " (PHT)";
+      }
+    }
+    // Update immediately, then every second
+    updatePhTime();
+    setInterval(updatePhTime, 1000);
+
+    // --- DATA SYSTEM (LOCALSTORAGE) ---
+
+    const defaultUsers = [
+      { id: 'u1', username: 'admin', password: 'admin123', role: 'admin' },
+      { id: 'u2', username: 'user', password: 'user123', role: 'user' }
+    ];
+
+    const defaultPortalData = [
+      {
+        id: 'c1',
+        type: 'webapp',
+        category: "HR & Analytics",
+        icon: "layout",
+        items: [
+          { id: 'i1', title: "HR Management System", description: "Manage employee records, leaves, and payroll.", url: "#hr-system", icon: "users", color: "text-blue-600", bg: "bg-blue-100" },
+          { id: 'i2', title: "Analytics Dashboard", description: "View real-time performance metrics.", url: "#analytics", icon: "bar-chart-3", color: "text-indigo-600", bg: "bg-indigo-100" }
+        ]
+      },
+      {
+        id: 'c2',
+        type: 'document',
+        category: "Company Policies",
+        icon: "folder-open",
+        items: [
+          { id: 'i3', title: "Employee Handbook", description: "Company policies and operational guidelines.", url: "#handbook", icon: "book-open", color: "text-amber-600", bg: "bg-amber-100" },
+          { id: 'i4', title: "Q1 Financial Report", description: "Detailed quarterly earnings and expenses.", url: "#finance", icon: "file-spreadsheet", color: "text-green-600", bg: "bg-green-100" }
+        ]
+      }
+    ];
+
+    function initData() {
+      if (!localStorage.getItem('portal_users')) {
+        localStorage.setItem('portal_users', JSON.stringify(defaultUsers));
+      }
+      
+      // Migration check: Ensure data has the new 'type' property (webapp/document)
+      let currentData = JSON.parse(localStorage.getItem('portal_data'));
+      if (!currentData || (currentData.length > 0 && !currentData[0].type)) {
+        localStorage.setItem('portal_data', JSON.stringify(defaultPortalData));
+      }
+    }
+
+    const getUsers = () => JSON.parse(localStorage.getItem('portal_users'));
+    const setUsers = (users) => localStorage.setItem('portal_users', JSON.stringify(users));
+    const getPortalData = () => JSON.parse(localStorage.getItem('portal_data'));
+    const setPortalData = (data) => localStorage.setItem('portal_data', JSON.stringify(data));
+    const getCurrentUser = () => JSON.parse(sessionStorage.getItem('portal_currentUser'));
+    const setCurrentUser = (user) => {
+      if (user) sessionStorage.setItem('portal_currentUser', JSON.stringify(user));
+      else sessionStorage.removeItem('portal_currentUser');
+    };
+
+    // --- ICONS & CONFIRMATION SYSTEM ---
+    const availableIcons = [
+      'link-2', 'layout', 'folder', 'folder-open', 'users', 'file-text', 'bar-chart-3', 
+      'book-open', 'file-spreadsheet', 'palette', 'github', 'pen-tool', 'external-link', 
+      'globe', 'mail', 'message-square', 'camera', 'video', 'music', 'shopping-cart', 
+      'settings', 'shield', 'star', 'heart', 'zap', 'cloud', 'bell', 'calendar', 'check-circle'
+    ];
+
+    function renderIconGrids() {
+      const renderGrid = (gridId, inputId) => {
+        const grid = document.getElementById(gridId);
+        if(!grid) return;
+        grid.innerHTML = availableIcons.map(icon => `
+          <button type="button" onclick="selectIcon('${inputId}', '${icon}')" id="btn_${inputId}_${icon}" class="flex items-center justify-center p-2.5 border border-slate-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-colors">
+            <i data-lucide="${icon}" class="w-5 h-5 text-slate-600"></i>
+          </button>
+        `).join('');
+      };
+      renderGrid('catIconGrid', 'catIconInput');
+      renderGrid('linkIconGrid', 'linkIconInput');
+    }
+
+    function selectIcon(inputId, iconName) {
+      document.getElementById(inputId).value = iconName;
+      document.querySelectorAll(`[id^="btn_${inputId}_"]`).forEach(btn => {
+        btn.classList.remove('bg-blue-100', 'border-blue-500', 'ring-2', 'ring-blue-200');
+      });
+      const selectedBtn = document.getElementById(`btn_${inputId}_${iconName}`);
+      if(selectedBtn) selectedBtn.classList.add('bg-blue-100', 'border-blue-500', 'ring-2', 'ring-blue-200');
+    }
+
+    let pendingAction = null;
+    function confirmAction(title, message, btnClass, actionCallback) {
+      document.getElementById('confirmTitle').innerText = title;
+      document.getElementById('confirmMessage').innerText = message;
+      const btn = document.getElementById('confirmBtn');
+      btn.className = `px-4 py-2 text-white rounded-lg font-medium transition-colors text-sm ${btnClass}`;
+      pendingAction = actionCallback;
+      document.getElementById('confirmModal').classList.remove('hidden');
+    }
+
+    function closeConfirmModal() {
+      document.getElementById('confirmModal').classList.add('hidden');
+      pendingAction = null;
+    }
+
+    document.getElementById('confirmBtn').addEventListener('click', () => {
+      if (pendingAction) pendingAction();
+      closeConfirmModal();
+    });
+
+    // --- CUSTOM TOAST NOTIFICATION ---
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      const colors = type === 'success' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200';
+      const icon = type === 'success' ? 'check-circle' : 'alert-circle';
+
+      toast.className = `toast-enter flex items-center gap-2 px-4 py-3 rounded-xl border shadow-lg ${colors}`;
+      toast.innerHTML = `<i data-lucide="${icon}" class="w-5 h-5"></i> <span class="text-sm font-medium">${message}</span>`;
+      
+      container.appendChild(toast);
+      lucide.createIcons();
+
+      setTimeout(() => {
+        toast.classList.replace('toast-enter', 'toast-exit');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // --- CORE LOGIC & ROUTING ---
+
+    function switchView(viewName) {
+      const user = getCurrentUser();
+      
+      document.getElementById('viewLogin').classList.add('hidden');
+      document.getElementById('viewPortal').classList.add('hidden');
+      document.getElementById('viewSettings').classList.add('hidden');
+      document.getElementById('mainHeader').classList.add('hidden');
+      document.getElementById('mainFooter').classList.add('hidden');
+
+      if (!user) {
+        document.getElementById('viewLogin').classList.remove('hidden');
+        return;
+      }
+
+      document.getElementById('mainHeader').classList.remove('hidden');
+      document.getElementById('mainFooter').classList.remove('hidden');
+      document.getElementById('userWelcomeText').innerText = `Welcome, ${user.username} (${user.role})`;
+
+      const btnSettings = document.getElementById('btnNavSettings');
+      const btnPortal = document.getElementById('btnNavPortal');
+      const searchContainer = document.getElementById('searchContainer');
+
+      if (viewName === 'portal') {
+        document.getElementById('viewPortal').classList.remove('hidden');
+        btnPortal.classList.add('hidden');
+        searchContainer.classList.remove('hidden');
+        if (user.role === 'admin') btnSettings.classList.remove('hidden');
+        renderPortal(); // Re-render active tab
+      } else if (viewName === 'settings' && user.role === 'admin') {
+        document.getElementById('viewSettings').classList.remove('hidden');
+        btnSettings.classList.add('hidden');
+        searchContainer.classList.add('hidden');
+        btnPortal.classList.remove('hidden');
+        renderAdminLinks();
+        renderAdminUsers();
+      } else {
+        switchView('portal');
+      }
+      lucide.createIcons();
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById('loginUsername').value.trim();
+      const p = document.getElementById('loginPassword').value.trim();
+      
+      const users = getUsers();
+      const user = users.find(usr => usr.username === u && usr.password === p);
+
+      if (user) {
+        setCurrentUser({ id: user.id, username: user.username, role: user.role });
+        document.getElementById('loginForm').reset();
+        showToast('Login successful!');
+        switchView('portal');
+      } else {
+        showToast('Invalid Username or Password.', 'error');
+      }
+    }
+
+    function logout() {
+      setCurrentUser(null);
+      switchView('login');
+    }
+
+    // --- PORTAL VIEW RENDERING (WITH TABS) ---
+    
+    let activePortalTab = 'webapp';
+    const searchInput = document.getElementById('searchInput');
+    const portalContent = document.getElementById('portalContent');
+
+    function switchPortalTab(tabType) {
+      activePortalTab = tabType;
+      
+      const appBtn = document.getElementById('tabAppBtn');
+      const docBtn = document.getElementById('tabDocBtn');
+      
+      const activeClass = "flex items-center gap-2 px-5 py-3 border-b-2 font-medium text-sm transition-colors border-blue-600 text-blue-600";
+      const inactiveClass = "flex items-center gap-2 px-5 py-3 border-b-2 font-medium text-sm transition-colors border-transparent text-slate-500 hover:text-slate-700";
+
+      if (tabType === 'webapp') {
+        appBtn.className = activeClass;
+        docBtn.className = inactiveClass;
+      } else {
+        docBtn.className = activeClass;
+        appBtn.className = inactiveClass;
+      }
+      
+      // Clear search when switching tabs (optional, but good UX)
+      searchInput.value = '';
+      renderPortal();
+    }
+
+    function renderPortal(query = "") {
+      const data = getPortalData();
+      const lowerQuery = query.toLowerCase();
+
+      // Filter by active tab AND search query
+      const filteredData = data.filter(section => section.type === activePortalTab).map(section => {
+        const filteredItems = section.items.filter(item => 
+          item.title.toLowerCase().includes(lowerQuery) || 
+          item.description.toLowerCase().includes(lowerQuery)
+        );
+        return { ...section, items: filteredItems };
+      }).filter(section => section.items.length > 0);
+
+      // Render HTML
+      if (filteredData.length === 0) {
+        portalContent.innerHTML = `
+          <div class="text-center py-20">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
+              <i data-lucide="search" class="h-8 w-8 text-slate-400"></i>
+            </div>
+            <h3 class="text-lg font-medium text-slate-900">No results found</h3>
+            <p class="mt-1 text-slate-500">Try searching with different keywords in this tab.</p>
+          </div>
+        `;
+      } else {
+        portalContent.innerHTML = filteredData.map((section, idx) => `
+          <section class="animate-in" style="animation-delay: ${idx * 100}ms;">
+            <div class="flex items-center gap-2 mb-6 border-b border-slate-200 pb-2">
+              <div class="text-slate-500">
+                <i data-lucide="${section.icon}" class="w-5 h-5"></i>
+              </div>
+              <h2 class="text-xl font-semibold text-slate-800">${section.category}</h2>
+              <span class="ml-auto bg-slate-200 text-slate-600 py-0.5 px-2.5 rounded-full text-xs font-medium">${section.items.length}</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              ${section.items.map(item => {
+                const target = item.url.startsWith('http') ? "_blank" : "_self";
+                const bg = item.bg || 'bg-slate-100';
+                const col = item.color || 'text-slate-600';
+                const ico = item.icon || 'link';
+                return `
+                  <a href="${item.url}" target="${target}" rel="noreferrer" class="group relative flex flex-col bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <div class="flex justify-between items-start mb-4">
+                      <div class="p-3 rounded-xl ${bg} ${col} group-hover:scale-110 transition-transform duration-200">
+                        <i data-lucide="${ico}" class="w-6 h-6"></i>
+                      </div>
+                      <i data-lucide="external-link" class="w-5 h-5 text-slate-300 group-hover:text-blue-500 transition-colors"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-slate-900 group-hover:text-blue-700 transition-colors mb-2 line-clamp-1">${item.title}</h3>
+                    <p class="text-sm text-slate-500 line-clamp-2 mt-auto">${item.description}</p>
+                  </a>
+                `;
+              }).join('')}
+            </div>
+          </section>
+        `).join('');
+      }
+      lucide.createIcons();
+    }
+
+    searchInput.addEventListener('input', (e) => renderPortal(e.target.value));
+
+
+    // --- SETTINGS / ADMIN PANEL LOGIC ---
+
+    function switchSettingsTab(tab) {
+      const btnLinks = document.getElementById('tabBtnLinks');
+      const btnUsers = document.getElementById('tabBtnUsers');
+      
+      if(tab === 'links') {
+        btnLinks.className = "flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-colors bg-blue-50 text-blue-700";
+        btnUsers.className = "flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-colors text-slate-600 hover:bg-slate-100 hover:text-slate-900";
+        document.getElementById('tabContentLinks').classList.remove('hidden');
+        document.getElementById('tabContentUsers').classList.add('hidden');
+      } else {
+        btnUsers.className = "flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-colors bg-blue-50 text-blue-700";
+        btnLinks.className = "flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-colors text-slate-600 hover:bg-slate-100 hover:text-slate-900";
+        document.getElementById('tabContentUsers').classList.remove('hidden');
+        document.getElementById('tabContentLinks').classList.add('hidden');
+      }
+    }
+
+    function renderAdminLinks() {
+      const data = getPortalData();
+      const container = document.getElementById('adminCategoriesList');
+      
+      container.innerHTML = data.map(cat => `
+        <div class="border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
+          <div class="bg-white border-b border-slate-200 px-5 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3 font-semibold text-slate-800">
+              <div class="p-1.5 bg-slate-100 rounded-lg">
+                <i data-lucide="${cat.icon}" class="w-5 h-5 text-slate-500"></i>
+              </div>
+              <div>
+                ${cat.category}
+                <span class="block text-xs font-normal text-slate-400 mt-0.5">${cat.type === 'webapp' ? 'Tab: Web Applications' : 'Tab: Documents'}</span>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="openLinkModal('${cat.id}')" class="text-sm text-blue-600 hover:text-blue-800 font-medium px-2 py-1 rounded hover:bg-blue-50 transition-colors">+ Add Link</button>
+              <button onclick="deleteCategory('${cat.id}')" class="text-sm text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors" title="Delete Category"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+          <div class="p-4 space-y-2">
+            ${cat.items.length === 0 ? `<p class="text-sm text-slate-500 italic">No links here yet. Add one above.</p>` : ''}
+            ${cat.items.map(item => `
+              <div class="flex justify-between items-center bg-white p-3 border border-slate-100 rounded-lg shadow-sm">
+                <div>
+                  <p class="font-medium text-slate-800 text-sm flex items-center gap-2">
+                    <i data-lucide="${item.icon || 'link'}" class="w-4 h-4 text-slate-400"></i> ${item.title}
+                  </p>
+                  <a href="${item.url}" target="_blank" class="text-xs text-blue-500 hover:underline truncate max-w-xs inline-block mt-0.5">${item.url}</a>
+                </div>
+                <button onclick="deleteLink('${cat.id}', '${item.id}')" class="text-slate-400 hover:text-red-500 transition-colors p-2"><i data-lucide="x" class="w-4 h-4"></i></button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function renderAdminUsers() {
+      const users = getUsers();
+      const tbody = document.getElementById('adminUsersList');
+      const currentUser = getCurrentUser();
+
+      tbody.innerHTML = users.map(u => `
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-3 font-medium text-slate-900">${u.username} ${u.id === currentUser.id ? '<span class="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded ml-2">You</span>' : ''}</td>
+          <td class="px-4 py-3">
+            <span class="text-xs font-semibold px-2 py-1 rounded-full ${u.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-700'}">
+              ${u.role.toUpperCase()}
+            </span>
+          </td>
+          <td class="px-4 py-3 text-right">
+            ${u.id !== currentUser.id ? `
+              <button onclick="deleteUser('${u.id}')" class="text-slate-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50" title="Delete User">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            ` : '<span class="text-xs text-slate-400 italic">Cannot delete self</span>'}
+          </td>
+        </tr>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    // CRUD: Users
+    function handleAddUser(e) {
+      e.preventDefault();
+      const uName = document.getElementById('newUsername').value.trim();
+      const pWord = document.getElementById('newPassword').value.trim();
+      const role = document.getElementById('newRole').value;
+
+      if (!uName || !pWord) return;
+
+      const users = getUsers();
+      if(users.some(u => u.username === uName)) {
+        showToast('Username already exists.', 'error');
+        return;
+      }
+
+      confirmAction('Add New User', `Are you sure you want to create the user "${uName}"?`, 'bg-blue-600 hover:bg-blue-700', () => {
+        users.push({ id: 'u' + Date.now(), username: uName, password: pWord, role: role });
+        setUsers(users);
+        showToast('User added successfully.');
+        e.target.reset();
+        renderAdminUsers();
+      });
+    }
+
+    function deleteUser(id) {
+      confirmAction('Delete User', 'Are you sure you want to delete this user? This action cannot be undone.', 'bg-red-600 hover:bg-red-700', () => {
+        let users = getUsers();
+        users = users.filter(u => u.id !== id);
+        setUsers(users);
+        showToast('User deleted.');
+        renderAdminUsers();
+      });
+    }
+
+    // CRUD: Categories & Links
+    function handleAddCategory(e) {
+      e.preventDefault();
+      const name = document.getElementById('catName').value.trim();
+      const type = document.getElementById('catType').value;
+      let icon = document.getElementById('catIconInput').value.trim();
+      if(!icon) icon = 'folder';
+
+      confirmAction('Create Category', `Are you sure you want to create the category "${name}"?`, 'bg-blue-600 hover:bg-blue-700', () => {
+        const data = getPortalData();
+        data.push({
+          id: 'c' + Date.now(),
+          type: type,
+          category: name,
+          icon: icon,
+          items: []
+        });
+        setPortalData(data);
+        hideModal();
+        showToast('Category created successfully.');
+        renderAdminLinks();
+      });
+    }
+
+    function deleteCategory(id) {
+      confirmAction('Delete Category', 'Are you sure you want to delete this entire category and all its links?', 'bg-red-600 hover:bg-red-700', () => {
+        let data = getPortalData();
+        data = data.filter(c => c.id !== id);
+        setPortalData(data);
+        showToast('Category deleted.');
+        renderAdminLinks();
+      });
+    }
+
+    function handleAddLink(e) {
+      e.preventDefault();
+      const catId = document.getElementById('linkCategoryId').value;
+      const title = document.getElementById('linkTitle').value.trim();
+      const url = document.getElementById('linkUrl').value.trim();
+      const desc = document.getElementById('linkDesc').value.trim();
+      let icon = document.getElementById('linkIconInput').value.trim();
+      if(!icon) icon = 'link-2';
+
+      confirmAction('Add Link', `Are you sure you want to add the link "${title}"?`, 'bg-blue-600 hover:bg-blue-700', () => {
+        let data = getPortalData();
+        const catIndex = data.findIndex(c => c.id === catId);
+        
+        if(catIndex > -1) {
+          const colors = [
+            {c: 'text-blue-600', b: 'bg-blue-100'},
+            {c: 'text-indigo-600', b: 'bg-indigo-100'},
+            {c: 'text-emerald-600', b: 'bg-emerald-100'},
+            {c: 'text-pink-600', b: 'bg-pink-100'},
+            {c: 'text-amber-600', b: 'bg-amber-100'}
+          ];
+          const randomStyle = colors[Math.floor(Math.random() * colors.length)];
+
+          data[catIndex].items.push({
+            id: 'l' + Date.now(),
+            title: title,
+            url: url,
+            description: desc,
+            icon: icon,
+            color: randomStyle.c,
+            bg: randomStyle.b
+          });
+          setPortalData(data);
+          hideModal();
+          showToast('Link added to portal.');
+          renderAdminLinks();
+          // If we are currently in portal view, refresh it just in case
+          if (!document.getElementById('viewPortal').classList.contains('hidden')) {
+             renderPortal(document.getElementById('searchInput').value);
+          }
+        }
+      });
+    }
+
+    function deleteLink(catId, linkId) {
+      confirmAction('Delete Link', 'Are you sure you want to remove this link?', 'bg-red-600 hover:bg-red-700', () => {
+        let data = getPortalData();
+        const catIndex = data.findIndex(c => c.id === catId);
+        if(catIndex > -1) {
+          data[catIndex].items = data[catIndex].items.filter(i => i.id !== linkId);
+          setPortalData(data);
+          showToast('Link deleted.');
+          renderAdminLinks();
+        }
+      });
+    }
+
+    // --- MODAL CONTROLS ---
+    function showModal(modalId) {
+      document.getElementById('modalOverlay').classList.remove('hidden');
+      document.getElementById('categoryModal').classList.add('hidden');
+      document.getElementById('linkModal').classList.add('hidden');
+      document.getElementById(modalId).classList.remove('hidden');
+      
+      // Reset icon selection on open
+      if(modalId === 'categoryModal') {
+        selectIcon('catIconInput', 'folder');
+      } else if (modalId === 'linkModal') {
+        selectIcon('linkIconInput', 'link-2');
+      }
+    }
+
+    function hideModal() {
+      document.getElementById('modalOverlay').classList.add('hidden');
+      document.querySelectorAll('#modalOverlay form').forEach(f => f.reset());
+    }
+
+    function openLinkModal(categoryId) {
+      document.getElementById('linkCategoryId').value = categoryId;
+      showModal('linkModal');
+    }
+
+    // Initial Load Setup
+    document.addEventListener("DOMContentLoaded", () => {
+      initData();
+      renderIconGrids();
+      switchView('login');
+      lucide.createIcons();
+    });
+
+  </script>
+</body>
+</html>
