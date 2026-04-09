@@ -557,20 +557,18 @@ service cloud.firestore {
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 
-    // --- FIREBASE INITIALIZATION ---
-    const firebaseConfig = {
-      apiKey: "AIzaSyBp23Ghe6yVbxXwYHvpDT1bS1R4LraEFQg",
-      authDomain: "accessportal-32d03.firebaseapp.com",
-      databaseURL: "https://accessportal-32d03-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "accessportal-32d03",
-      storageBucket: "accessportal-32d03.firebasestorage.app",
-      messagingSenderId: "857849232125",
-      appId: "1:857849232125:web:42d929eef021bfd1db5c94",
-      measurementId: "G-GHGHY3193B"
-    };
-
+const firebaseConfig = {
+  apiKey: "AIzaSyBp23Ghe6yVbxXwYHvpDT1bS1R4LraEFQg",
+  authDomain: "accessportal-32d03.firebaseapp.com",
+  databaseURL: "https://accessportal-32d03-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "accessportal-32d03",
+  storageBucket: "accessportal-32d03.firebasestorage.app",
+  messagingSenderId: "857849232125",
+  appId: "1:857849232125:web:42d929eef021bfd1db5c94",
+  measurementId: "G-GHGHY3193B"
+};
     const appId = firebaseConfig.projectId; 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
